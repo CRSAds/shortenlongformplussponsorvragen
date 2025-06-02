@@ -23,20 +23,11 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const longFormCampaigns = [];
-  window.longFormCampaigns = longFormCampaigns;;
+  window.longFormCampaigns = longFormCampaigns;
   const longFormSection = document.getElementById('long-form-section');
 
-  
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
   const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
-
-  // Verberg alle stappen behalve de eerste
-  if (window.location.hostname !== "app.swipepages.com") {
-    steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
-    document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
-      el.style.display = 'none';
-    });
-  }
 
   if (window.location.hostname !== "app.swipepages.com") {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
@@ -46,8 +37,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   steps.forEach((step, index) => {
-    const flowBtn = step.querySelector('.flow-next');
-    if (flowBtn) {
+    const flowBtns = step.querySelectorAll('.flow-next');
+    flowBtns.forEach(flowBtn => {
       flowBtn.addEventListener('click', () => {
         const form = step.querySelector('form');
         if (form) {
@@ -82,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
-    }
+    });
 
     step.querySelectorAll('.sponsor-optin').forEach(button => {
       button.addEventListener('click', () => {
@@ -130,23 +121,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const payload = buildPayload(campaign);
         fetchLead(payload);
       });
-     
-      
-      longFormSection.style.display = 'none';
 
+      longFormSection.style.display = 'none';
       const flowSteps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
       const longFormIndex = flowSteps.findIndex(el => el.id === 'long-form-section');
       const next = flowSteps[longFormIndex + 1];
 
       if (next) {
-        console.log('Volgende sectie (volgorde):', next);
         next.classList.remove('hide-on-live');
         next.style.removeProperty('display');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        console.log('Geen volgende sectie gevonden na long form');
       }
-
     });
   }
 
