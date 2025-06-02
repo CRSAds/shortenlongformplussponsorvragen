@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
   const campaigns = {
     "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -19,13 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
     "campaign-generationzero": { cid: 4555, sid: 34, requiresLongForm: true },
     "campaign-hotelspecials": { cid: 4621, sid: 34, requiresLongForm: false },
     "campaign-raadselgids": { cid: 3697, sid: 34, requiresLongForm: true },
-    "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false },
+    "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false }
   };
 
   const longFormCampaigns = [];
   window.longFormCampaigns = longFormCampaigns;
   const longFormSection = document.getElementById('long-form-section');
-
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
   const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
 
@@ -33,6 +33,15 @@ document.addEventListener('DOMContentLoaded', function () {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
     document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
       el.style.display = 'none';
+    });
+  }
+
+  function reloadImages(section) {
+    const images = section.querySelectorAll('img');
+    images.forEach(img => {
+      const src = img.src;
+      img.src = '';
+      img.src = src;
     });
   }
 
@@ -67,9 +76,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const next = steps[index + 1];
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
+          reloadImages(longFormSection);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (next) {
           next.style.display = 'block';
+          reloadImages(next);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
@@ -92,9 +103,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const next = steps[index + 1];
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
+          reloadImages(longFormSection);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (next) {
           next.style.display = 'block';
+          reloadImages(next);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
@@ -130,36 +143,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (next) {
         next.classList.remove('hide-on-live');
         next.style.removeProperty('display');
+        reloadImages(next);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    });
-  }
-
-  // Automatisch doorspringen geboortedatum
-  const dobDay = document.getElementById('dob-day');
-  const dobMonth = document.getElementById('dob-month');
-  const dobYear = document.getElementById('dob-year');
-
-  if (dobDay) {
-    dobDay.addEventListener('input', function () {
-      const val = this.value;
-      if (val.length === 1 && parseInt(val) >= 4) {
-        this.value = '0' + val;
-        dobMonth.focus();
-      } else if (val.length === 2) {
-        dobMonth.focus();
-      }
-    });
-  }
-
-  if (dobMonth) {
-    dobMonth.addEventListener('input', function () {
-      const val = this.value;
-      if (val.length === 1 && val === '2') {
-        this.value = '02';
-        dobYear.focus();
-      } else if (val.length === 2) {
-        dobYear.focus();
       }
     });
   }
