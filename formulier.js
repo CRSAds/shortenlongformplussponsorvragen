@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
   const campaigns = {
     "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -36,6 +35,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Forceer preload van alle <img> tags
+  document.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src');
+    if (src) {
+      const preload = new Image();
+      preload.src = src;
+    }
+  });
+
   function reloadImages(section) {
     const images = section.querySelectorAll('img');
     images.forEach(img => {
@@ -45,36 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Automatisch door naar volgende geboortedatumveld
-  const dobDay = document.getElementById('dob-day');
-  const dobMonth = document.getElementById('dob-month');
-  const dobYear = document.getElementById('dob-year');
-
-  if (dobDay) {
-    dobDay.addEventListener('input', () => {
-      let val = dobDay.value;
-      if (val.length === 1 && parseInt(val) >= 4) {
-        dobDay.value = '0' + val;
-        dobMonth.focus();
-      } else if (val.length === 2) {
-        dobMonth.focus();
-      }
-    });
-  }
-
-  if (dobMonth) {
-    dobMonth.addEventListener('input', () => {
-      if (dobMonth.value.length === 1 && parseInt(dobMonth.value) >= 2) {
-        dobYear.focus();
-      } else if (dobMonth.value.length === 2) {
-        dobYear.focus();
-      }
-    });
-  }
-
   steps.forEach((step, index) => {
-    const flowBtns = step.querySelectorAll('.flow-next');
-    flowBtns.forEach(flowBtn => {
+    step.querySelectorAll('.flow-next').forEach(flowBtn => {
       flowBtn.addEventListener('click', () => {
         const form = step.querySelector('form');
         if (form) {
@@ -104,12 +84,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
           reloadImages(longFormSection);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (next) {
           next.style.display = 'block';
           reloadImages(next);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
 
@@ -131,12 +110,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
           reloadImages(longFormSection);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (next) {
           next.style.display = 'block';
           reloadImages(next);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
   });
