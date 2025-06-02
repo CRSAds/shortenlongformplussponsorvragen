@@ -63,12 +63,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         step.style.display = 'none';
         const next = steps[index + 1];
-        if (next) {
-          next.style.display = 'block';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        if (!next && longFormCampaigns.length > 0 && longFormSection) {
+        if (longFormCampaigns.length > 0 && longFormSection && step.classList.contains('coreg-section')) {
           longFormSection.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (next) {
+          next.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
@@ -89,12 +88,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         step.style.display = 'none';
         const next = steps[index + 1];
-        if (next) {
-          next.style.display = 'block';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        if (!next && longFormCampaigns.length > 0 && longFormSection) {
+        if (longFormCampaigns.length > 0 && longFormSection && step.classList.contains('coreg-section')) {
           longFormSection.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (next) {
+          next.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
