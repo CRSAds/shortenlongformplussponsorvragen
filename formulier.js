@@ -1,8 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const shortForm = document.getElementById('lead-form');
-  const longFormSection = document.getElementById('long-form-section');
-  const longFormBtn = document.getElementById('submit-long-form');
-
   const campaigns = {
     "campaign-mycollections": {
       cid: 1882,
@@ -19,6 +15,23 @@ document.addEventListener('DOMContentLoaded', function () {
   const selectedCampaigns = [];
   const longFormCampaigns = [];
 
+  const flowSections = Array.from(document.querySelectorAll('.flow-section'));
+  const coregSections = Array.from(document.querySelectorAll('.coreg-section'));
+  const longFormSection = document.getElementById('long-form-section');
+
+  // Verberg alles behalve eerste flow-sectie
+  if (window.location.hostname !== "app.swipepages.com") {
+    document.querySelectorAll('.coreg-section, .hide-on-live, #long-form-section').forEach(el => {
+      el.style.display = 'none';
+    });
+
+    flowSections.forEach((el, i) => {
+      el.style.display = i === 0 ? 'block' : 'none';
+    });
+  }
+
+  // Stap 1: Short form afhandeling
+  const shortForm = document.getElementById('lead-form');
   if (shortForm) {
     shortForm.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -38,41 +51,53 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem(key, value);
       }
 
-      document.querySelectorAll('.sponsor-optin').forEach(btn => btn.disabled = false);
-      shortForm.style.display = 'none';
-      document.getElementById('sponsor-questions')?.style.display = 'block';
+      // Verberg de eerste flow-sectie, toon eerste coreg-sectie
+      if (flowSections.length > 0) flowSections[0].style.display = 'none';
+      if (coregSections.length > 0) coregSections[0].style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
-  document.querySelectorAll('.sponsor-optin').forEach(button => {
-    button.addEventListener('click', function () {
-      button.disabled = true;
-      const campaignId = button.id;
-      if (!campaigns[campaignId]) return;
+  // Stap 2: Sponsorvragen doorklikken
+  coregSections.forEach((section, index) => {
+    section.querySelectorAll('.sponsor-optin').forEach(button => {
+      button.addEventListener('click', function () {
+        const campaignId = button.id;
+        if (!campaigns[campaignId]) return;
 
-      selectedCampaigns.push(campaignId);
-      if (campaigns[campaignId].requiresLongForm) {
-        longFormCampaigns.push(campaignId);
-      }
+        selectedCampaigns.push(campaignId);
+        if (campaigns[campaignId].requiresLongForm) {
+          longFormCampaigns.push(campaignId);
+        }
 
-      if (document.querySelectorAll('.sponsor-optin:disabled').length === document.querySelectorAll('.sponsor-optin').length) {
-        if (longFormCampaigns.length > 0) {
+        // Verberg huidige sectie
+        section.style.display = 'none';
+
+        // Toon volgende sectie of long form
+        const nextIndex = index + 1;
+        if (nextIndex < coregSections.length) {
+          coregSections[nextIndex].style.display = 'block';
+        } else if (longFormCampaigns.length > 0) {
           longFormSection.style.display = 'block';
         } else {
           submitToCampaigns(selectedCampaigns);
         }
-      }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     });
   });
 
+  // Stap 3: Long form indienen
+  const longFormBtn = document.getElementById('submit-long-form');
   if (longFormBtn) {
-    longFormBtn.addEventListener('click', async function () {
+    longFormBtn.addEventListener('click', function () {
       const extraData = {
-        postcode: document.getElementById('postcode').value.trim(),
-        straat: document.getElementById('straat').value.trim(),
-        huisnummer: document.getElementById('huisnummer').value.trim(),
-        woonplaats: document.getElementById('woonplaats').value.trim(),
-        telefoon: document.getElementById('telefoon').value.trim()
+        postcode: document.getElementById('postcode')?.value.trim(),
+        straat: document.getElementById('straat')?.value.trim(),
+        huisnummer: document.getElementById('huisnummer')?.value.trim(),
+        woonplaats: document.getElementById('woonplaats')?.value.trim(),
+        telefoon: document.getElementById('telefoon')?.value.trim()
       };
 
       for (const [key, value] of Object.entries(extraData)) {
@@ -83,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Stap 4: Verzenden naar alle geselecteerde campagnes
   function submitToCampaigns(campaignIds) {
     const baseUrl = 'https://crsadvertising.databowl.com/api/v1/lead';
 
