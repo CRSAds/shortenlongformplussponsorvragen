@@ -16,11 +16,14 @@ form {
 
 .gender-group label {
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 label {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   font-weight: bold;
   margin-top: 16px;
 }
@@ -30,23 +33,24 @@ input[type="email"],
 input[type="tel"] {
   width: 100%;
   padding: 12px;
-  margin-bottom: 16px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 16px;
   box-sizing: border-box;
+  margin-bottom: 0;
 }
 
 .dob-group {
   display: flex;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-top: 6px;
 }
 
 .dob-group input {
   flex: 1;
 }
 
+button[type="submit"],
 button.flow-next,
 button#submit-long-form {
   background-color: #ff7300;
@@ -60,7 +64,6 @@ button#submit-long-form {
   margin-top: 24px;
 }
 
-button.flow-next:hover,
-button#submit-long-form:hover {
+button:hover {
   background-color: #e36200;
 }
