@@ -135,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
       
       
       
+      
       longFormSection.style.display = 'none';
       const allSections = Array.from(document.querySelectorAll('section'));
       const longFormPos = allSections.findIndex(s => s.id === 'long-form-section');
@@ -143,10 +144,11 @@ document.addEventListener('DOMContentLoaded', function () {
       );
 
       if (next) {
-        next.style.display = 'block';
         next.classList.remove('hide-on-live');
+        next.style.removeProperty('display');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+
 
 
 
