@@ -130,30 +130,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const payload = buildPayload(campaign);
         fetchLead(payload);
       });
-
-      
-      
-      
-      
-      
+     
       
       longFormSection.style.display = 'none';
-      const allBlocks = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
-      const longFormIndex = allBlocks.findIndex(s => s.id === 'long-form-section');
-      const next = allBlocks[longFormIndex + 1];
+
+      const flowSteps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
+      const longFormIndex = flowSteps.findIndex(el => el.id === 'long-form-section');
+      const next = flowSteps[longFormIndex + 1];
 
       if (next) {
-        console.log('Volgende sectie gevonden:', next);
+        console.log('Volgende sectie (volgorde):', next);
         next.classList.remove('hide-on-live');
         next.style.removeProperty('display');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         console.log('Geen volgende sectie gevonden na long form');
       }
-
-
-
-
 
     });
   }
