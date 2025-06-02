@@ -136,12 +136,11 @@ document.addEventListener('DOMContentLoaded', function () {
       
       
       
+      
       longFormSection.style.display = 'none';
-      const allSections = Array.from(document.querySelectorAll('section'));
-      const longFormPos = allSections.findIndex(s => s.id === 'long-form-section');
-      const next = allSections.slice(longFormPos + 1).find(s =>
-        s.classList.contains('flow-section') || s.classList.contains('coreg-section')
-      );
+      const allBlocks = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
+      const longFormIndex = allBlocks.findIndex(s => s.id === 'long-form-section');
+      const next = allBlocks[longFormIndex + 1];
 
       if (next) {
         console.log('Volgende sectie gevonden:', next);
@@ -151,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         console.log('Geen volgende sectie gevonden na long form');
       }
+
 
 
 
