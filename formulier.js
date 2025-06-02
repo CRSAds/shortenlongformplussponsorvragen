@@ -132,13 +132,13 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       
+      
       longFormSection.style.display = 'none';
       const allSections = Array.from(document.querySelectorAll('section'));
       const longFormPos = allSections.findIndex(s => s.id === 'long-form-section');
       const next = allSections.slice(longFormPos + 1).find(s =>
         s.classList.contains('flow-section') || s.classList.contains('coreg-section')
       );
-      if (next) next.style.display = 'block';
 
       if (next) {
         next.style.display = 'block';
@@ -146,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         window.location.href = "/memoryspel/bedankt";
       }
+
     });
   }
 
