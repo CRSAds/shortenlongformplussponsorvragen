@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
   const campaigns = {
     "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const allSections = Array.from(document.querySelectorAll('section'));
   const steps = allSections.filter(el => el.classList.contains('flow-section') || el.classList.contains('coreg-section'));
-  const hideInitially = () => {
+  // removed faulty init block
     if (window.location.hostname !== "app.swipepages.com") {
       steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
       document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
@@ -132,8 +133,8 @@ const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).las
       });
 
       longFormSection.style.display = 'none';
-      const longFormPos = allSections.findIndex(s => s.id === 'long-form-section');
-      const next = allSections.slice(longFormPos + 1).find(s => s.classList.contains('flow-section') || s.classList.contains('coreg-section'));
+      const next = steps.find(s => s.style.display === 'none');
+      if (next) next.style.display = 'block';
       if (next) {
         next.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
