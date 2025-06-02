@@ -135,6 +135,35 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Automatisch doorspringen geboortedatum
+  const dobDay = document.getElementById('dob-day');
+  const dobMonth = document.getElementById('dob-month');
+  const dobYear = document.getElementById('dob-year');
+
+  if (dobDay) {
+    dobDay.addEventListener('input', function () {
+      const val = this.value;
+      if (val.length === 1 && parseInt(val) >= 4) {
+        this.value = '0' + val;
+        dobMonth.focus();
+      } else if (val.length === 2) {
+        dobMonth.focus();
+      }
+    });
+  }
+
+  if (dobMonth) {
+    dobMonth.addEventListener('input', function () {
+      const val = this.value;
+      if (val.length === 1 && val === '2') {
+        this.value = '02';
+        dobYear.focus();
+      } else if (val.length === 2) {
+        dobYear.focus();
+      }
+    });
+  }
+
   function buildPayload(campaign) {
     return {
       cid: campaign.cid,
