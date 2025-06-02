@@ -26,18 +26,18 @@ document.addEventListener('DOMContentLoaded', function () {
   window.longFormCampaigns = longFormCampaigns;;
   const longFormSection = document.getElementById('long-form-section');
 
-  const allSections = Array.from(document.querySelectorAll('section'));
-  const steps = allSections.filter(el => el.classList.contains('flow-section') || el.classList.contains('coreg-section'));
-  // removed faulty init block
-    if (window.location.hostname !== "app.swipepages.com") {
-      steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
-      document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
-        el.style.display = 'none';
-      });
-    }
-  };
-  hideInitially();
-const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
+  
+  const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
+  const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
+
+  // Verberg alle stappen behalve de eerste
+  if (window.location.hostname !== "app.swipepages.com") {
+    steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
+    document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
+      el.style.display = 'none';
+    });
+  }
+
   if (window.location.hostname !== "app.swipepages.com") {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
     document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
@@ -132,7 +132,8 @@ const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).las
       });
 
       longFormSection.style.display = 'none';
-      const next = steps.find(s => s.style.display === 'none');
+      const currentIndex = steps.findIndex(s => s.id === 'long-form-section');
+      const next = steps[currentIndex + 1];
       if (next) next.style.display = 'block';
       if (next) {
         next.style.display = 'block';
