@@ -131,10 +131,15 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchLead(payload);
       });
 
+      
       longFormSection.style.display = 'none';
-      const currentIndex = steps.findIndex(s => s.id === 'long-form-section');
-      const next = steps[currentIndex + 1];
+      const allSections = Array.from(document.querySelectorAll('section'));
+      const longFormPos = allSections.findIndex(s => s.id === 'long-form-section');
+      const next = allSections.slice(longFormPos + 1).find(s =>
+        s.classList.contains('flow-section') || s.classList.contains('coreg-section')
+      );
       if (next) next.style.display = 'block';
+
       if (next) {
         next.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
