@@ -19,46 +19,60 @@ document.addEventListener('DOMContentLoaded', function () {
   const coregSections = Array.from(document.querySelectorAll('.coreg-section'));
   const longFormSection = document.getElementById('long-form-section');
 
-  // Verberg alles behalve eerste flow-sectie
+  // Alleen op live URL verbergen
   if (window.location.hostname !== "app.swipepages.com") {
     document.querySelectorAll('.coreg-section, .hide-on-live, #long-form-section').forEach(el => {
       el.style.display = 'none';
     });
-
     flowSections.forEach((el, i) => {
       el.style.display = i === 0 ? 'block' : 'none';
     });
   }
 
-  // Stap 1: Short form afhandeling
-  const shortForm = document.getElementById('lead-form');
-  if (shortForm) {
-    shortForm.addEventListener('submit', function (e) {
-      e.preventDefault();
+  // Flow doorlopen via .flow-next buttons
+  flowSections.forEach((section, index) => {
+    const nextBtn = section.querySelector('.flow-next');
+    if (!nextBtn) return;
 
-      const formData = {
-        gender: shortForm.gender.value,
-        firstname: shortForm.firstname.value.trim(),
-        lastname: shortForm.lastname.value.trim(),
-        dob_day: shortForm.dob_day.value,
-        dob_month: shortForm.dob_month.value,
-        dob_year: shortForm.dob_year.value,
-        email: shortForm.email.value.trim(),
-        t_id: crypto.randomUUID()
-      };
+    nextBtn.addEventListener('click', function () {
+      // Als het formulier bevat, data opslaan
+      const form = section.querySelector('form');
+      if (form) {
+        const gender = form.querySelector('input[name="gender"]:checked')?.value;
+        const firstname = form.querySelector('#firstname')?.value.trim();
+        const lastname = form.querySelector('#lastname')?.value.trim();
+        const dob_day = form.querySelector('#dob_day')?.value;
+        const dob_month = form.querySelector('#dob_month')?.value;
+        const dob_year = form.querySelector('#dob_year')?.value;
+        const email = form.querySelector('#email')?.value.trim();
+        const t_id = crypto.randomUUID();
 
-      for (const [key, value] of Object.entries(formData)) {
-        localStorage.setItem(key, value);
+        if (gender && firstname && lastname && dob_day && dob_month && dob_year && email) {
+          localStorage.setItem('gender', gender);
+          localStorage.setItem('firstname', firstname);
+          localStorage.setItem('lastname', lastname);
+          localStorage.setItem('dob_day', dob_day);
+          localStorage.setItem('dob_month', dob_month);
+          localStorage.setItem('dob_year', dob_year);
+          localStorage.setItem('email', email);
+          localStorage.setItem('t_id', t_id);
+        }
       }
 
-      // Verberg de eerste flow-sectie, toon eerste coreg-sectie
-      if (flowSections.length > 0) flowSections[0].style.display = 'none';
-      if (coregSections.length > 0) coregSections[0].style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Toon volgende flow-section
+      section.style.display = 'none';
+      const next = flowSections[index + 1];
+      if (next) {
+        next.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (coregSections.length > 0) {
+        coregSections[0].style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
-  }
+  });
 
-  // Stap 2: Sponsorvragen doorklikken
+  // Coreg secties
   coregSections.forEach((section, index) => {
     section.querySelectorAll('.sponsor-optin').forEach(button => {
       button.addEventListener('click', function () {
@@ -70,10 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
           longFormCampaigns.push(campaignId);
         }
 
-        // Verberg huidige sectie
         section.style.display = 'none';
-
-        // Toon volgende sectie of long form
         const nextIndex = index + 1;
         if (nextIndex < coregSections.length) {
           coregSections[nextIndex].style.display = 'block';
@@ -88,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Stap 3: Long form indienen
   const longFormBtn = document.getElementById('submit-long-form');
   if (longFormBtn) {
     longFormBtn.addEventListener('click', function () {
@@ -108,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Stap 4: Verzenden naar alle geselecteerde campagnes
   function submitToCampaigns(campaignIds) {
     const baseUrl = 'https://crsadvertising.databowl.com/api/v1/lead';
 
