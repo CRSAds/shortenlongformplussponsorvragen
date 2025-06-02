@@ -66,7 +66,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (next) {
           next.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (longFormCampaigns.length > 0 && longFormSection) {
+        }
+        if (!next && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -91,7 +92,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (next) {
           next.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (longFormCampaigns.length > 0 && longFormSection) {
+        }
+        if (!next && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
