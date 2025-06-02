@@ -1,100 +1,99 @@
 document.addEventListener('DOMContentLoaded', function () {
   const campaigns = {
-    "campaign-mycollections": {
-      cid: 1882,
-      sid: 34,
-      requiresLongForm: true
-    },
-    "campaign-hotelspecials": {
-      cid: 4621,
-      sid: 34,
-      requiresLongForm: false
-    }
+    "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
+    "campaign-unitedconsumers-man": { cid: 2905, sid: 34, requiresLongForm: true },
+    "campaign-unitedconsumers-vrouw": { cid: 2906, sid: 34, requiresLongForm: true },
+    "campaign-kiosk": { cid: 3499, sid: 34, requiresLongForm: false },
+    "campaign-ad": { cid: 3532, sid: 34, requiresLongForm: false },
+    "campaign-volkskrant": { cid: 3534, sid: 34, requiresLongForm: false },
+    "campaign-parool": { cid: 4192, sid: 34, requiresLongForm: false },
+    "campaign-trouw": { cid: 4193, sid: 34, requiresLongForm: false },
+    "campaign-bndestem": { cid: 4200, sid: 34, requiresLongForm: false },
+    "campaign-brabantsdagblad": { cid: 4198, sid: 34, requiresLongForm: false },
+    "campaign-degelderlander": { cid: 4196, sid: 34, requiresLongForm: false },
+    "campaign-destentor": { cid: 4199, sid: 34, requiresLongForm: false },
+    "campaign-eindhovensdagblad": { cid: 4197, sid: 34, requiresLongForm: false },
+    "campaign-pzc": { cid: 4194, sid: 34, requiresLongForm: false },
+    "campaign-tubantia": { cid: 4195, sid: 34, requiresLongForm: false },
+    "campaign-consubeheer": { cid: 4720, sid: 34, requiresLongForm: true },
+    "campaign-generationzero": { cid: 4555, sid: 34, requiresLongForm: true },
+    "campaign-hotelspecials": { cid: 4621, sid: 34, requiresLongForm: false },
+    "campaign-raadselgids": { cid: 3697, sid: 34, requiresLongForm: true },
+    "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false },
   };
 
-  const selectedCampaigns = [];
   const longFormCampaigns = [];
-
-  const flowSections = Array.from(document.querySelectorAll('.flow-section'));
-  const coregSections = Array.from(document.querySelectorAll('.coreg-section'));
   const longFormSection = document.getElementById('long-form-section');
 
-  // Alleen op live URL verbergen
+  const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
   if (window.location.hostname !== "app.swipepages.com") {
-    document.querySelectorAll('.coreg-section, .hide-on-live, #long-form-section').forEach(el => {
+    steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
+    document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
       el.style.display = 'none';
-    });
-    flowSections.forEach((el, i) => {
-      el.style.display = i === 0 ? 'block' : 'none';
     });
   }
 
-  // Flow doorlopen via .flow-next buttons
-  flowSections.forEach((section, index) => {
-    const nextBtn = section.querySelector('.flow-next');
-    if (!nextBtn) return;
+  steps.forEach((step, index) => {
+    const flowBtn = step.querySelector('.flow-next');
+    if (flowBtn) {
+      flowBtn.addEventListener('click', () => {
+        const form = step.querySelector('form');
+        if (form) {
+          const gender = form.querySelector('input[name="gender"]:checked')?.value;
+          const firstname = form.querySelector('#firstname')?.value.trim();
+          const lastname = form.querySelector('#lastname')?.value.trim();
+          const dob_day = form.querySelector('#dob_day')?.value;
+          const dob_month = form.querySelector('#dob_month')?.value;
+          const dob_year = form.querySelector('#dob_year')?.value;
+          const email = form.querySelector('#email')?.value.trim();
+          const t_id = crypto.randomUUID();
 
-    nextBtn.addEventListener('click', function () {
-      // Als het formulier bevat, data opslaan
-      const form = section.querySelector('form');
-      if (form) {
-        const gender = form.querySelector('input[name="gender"]:checked')?.value;
-        const firstname = form.querySelector('#firstname')?.value.trim();
-        const lastname = form.querySelector('#lastname')?.value.trim();
-        const dob_day = form.querySelector('#dob_day')?.value;
-        const dob_month = form.querySelector('#dob_month')?.value;
-        const dob_year = form.querySelector('#dob_year')?.value;
-        const email = form.querySelector('#email')?.value.trim();
-        const t_id = crypto.randomUUID();
-
-        if (gender && firstname && lastname && dob_day && dob_month && dob_year && email) {
-          localStorage.setItem('gender', gender);
-          localStorage.setItem('firstname', firstname);
-          localStorage.setItem('lastname', lastname);
-          localStorage.setItem('dob_day', dob_day);
-          localStorage.setItem('dob_month', dob_month);
-          localStorage.setItem('dob_year', dob_year);
-          localStorage.setItem('email', email);
-          localStorage.setItem('t_id', t_id);
-        }
-      }
-
-      // Toon volgende flow-section
-      section.style.display = 'none';
-      const next = flowSections[index + 1];
-      if (next) {
-        next.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (coregSections.length > 0) {
-        coregSections[0].style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    });
-  });
-
-  // Coreg secties
-  coregSections.forEach((section, index) => {
-    section.querySelectorAll('.sponsor-optin').forEach(button => {
-      button.addEventListener('click', function () {
-        const campaignId = button.id;
-        if (!campaigns[campaignId]) return;
-
-        selectedCampaigns.push(campaignId);
-        if (campaigns[campaignId].requiresLongForm) {
-          longFormCampaigns.push(campaignId);
+          if (gender && firstname && lastname && dob_day && dob_month && dob_year && email) {
+            localStorage.setItem('gender', gender);
+            localStorage.setItem('firstname', firstname);
+            localStorage.setItem('lastname', lastname);
+            localStorage.setItem('dob_day', dob_day);
+            localStorage.setItem('dob_month', dob_month);
+            localStorage.setItem('dob_year', dob_year);
+            localStorage.setItem('email', email);
+            localStorage.setItem('t_id', t_id);
+          }
         }
 
-        section.style.display = 'none';
-        const nextIndex = index + 1;
-        if (nextIndex < coregSections.length) {
-          coregSections[nextIndex].style.display = 'block';
-        } else if (longFormCampaigns.length > 0) {
+        step.style.display = 'none';
+        const next = steps[index + 1];
+        if (next) {
+          next.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
-        } else {
-          submitToCampaigns(selectedCampaigns);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+
+    step.querySelectorAll('.sponsor-optin').forEach(button => {
+      button.addEventListener('click', () => {
+        const campaignId = button.id;
+        if (campaignId && campaigns[campaignId]) {
+          const campaign = campaigns[campaignId];
+          if (campaign.requiresLongForm) {
+            longFormCampaigns.push(campaignId);
+          } else {
+            const payload = buildPayload(campaign);
+            fetchLead(payload);
+          }
         }
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        step.style.display = 'none';
+        const next = steps[index + 1];
+        if (next) {
+          next.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (longFormCampaigns.length > 0 && longFormSection) {
+          longFormSection.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       });
     });
   });
@@ -114,14 +113,28 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem(key, value);
       }
 
-      submitToCampaigns(selectedCampaigns);
+      longFormCampaigns.forEach(campaignId => {
+        const campaign = campaigns[campaignId];
+        const payload = buildPayload(campaign);
+        fetchLead(payload);
+      });
+
+      longFormSection.style.display = 'none';
+      const index = steps.findIndex(s => s.id === 'long-form-section');
+      const next = steps[index + 1];
+      if (next) {
+        next.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.location.href = "/memoryspel/bedankt";
+      }
     });
   }
 
-  function submitToCampaigns(campaignIds) {
-    const baseUrl = 'https://crsadvertising.databowl.com/api/v1/lead';
-
-    const data = {
+  function buildPayload(campaign) {
+    return {
+      cid: campaign.cid,
+      sid: campaign.sid,
       gender: localStorage.getItem('gender'),
       firstname: localStorage.getItem('firstname'),
       lastname: localStorage.getItem('lastname'),
@@ -136,23 +149,15 @@ document.addEventListener('DOMContentLoaded', function () {
       woonplaats: localStorage.getItem('woonplaats') || '',
       telefoon: localStorage.getItem('telefoon') || ''
     };
+  }
 
-    campaignIds.forEach(async (id) => {
-      const campaign = campaigns[id];
-      const payload = { ...data, cid: campaign.cid, sid: campaign.sid };
-
-      try {
-        await fetch(baseUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        console.log(`Lead verzonden naar campagne ${id}`);
-      } catch (err) {
-        console.error(`Fout bij verzenden naar campagne ${id}:`, err);
-      }
-    });
-
-    window.location.href = "/memoryspel/bedankt";
+  function fetchLead(payload) {
+    fetch('https://crsadvertising.databowl.com/api/v1/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => console.log('Lead verzonden:', payload.cid))
+    .catch(err => console.error('Verzendfout:', err));
   }
 });
