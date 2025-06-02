@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
   window.longFormCampaigns = longFormCampaigns;;
   const longFormSection = document.getElementById('long-form-section');
 
-  const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
+  const allSections = Array.from(document.querySelectorAll('section'));
+  const steps = allSections.filter(el => el.classList.contains('flow-section') || el.classList.contains('coreg-section'));
+  const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
   if (window.location.hostname !== "app.swipepages.com") {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
     document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
@@ -63,12 +65,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         step.style.display = 'none';
         const next = steps[index + 1];
-        if (next) {
-          next.style.display = 'block';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        if (!next && longFormCampaigns.length > 0 && longFormSection) {
+        if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (next) {
+          next.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
@@ -89,12 +90,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         step.style.display = 'none';
         const next = steps[index + 1];
-        if (next) {
-          next.style.display = 'block';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        if (!next && longFormCampaigns.length > 0 && longFormSection) {
+        if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (next) {
+          next.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
@@ -123,8 +123,8 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       longFormSection.style.display = 'none';
-      const index = steps.findIndex(s => s.id === 'long-form-section');
-      const next = steps[index + 1];
+      const longFormPos = allSections.findIndex(s => s.id === 'long-form-section');
+      const next = allSections.slice(longFormPos + 1).find(s => s.classList.contains('flow-section') || s.classList.contains('coreg-section'));
       if (next) {
         next.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
