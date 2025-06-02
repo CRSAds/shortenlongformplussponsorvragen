@@ -144,9 +144,12 @@ document.addEventListener('DOMContentLoaded', function () {
       );
 
       if (next) {
+        console.log('Volgende sectie gevonden:', next);
         next.classList.remove('hide-on-live');
         next.style.removeProperty('display');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        console.log('Geen volgende sectie gevonden na long form');
       }
 
 
