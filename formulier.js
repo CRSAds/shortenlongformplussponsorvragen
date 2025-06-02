@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const longFormCampaigns = [];
+  window.longFormCampaigns = longFormCampaigns;;
   const longFormSection = document.getElementById('long-form-section');
 
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
