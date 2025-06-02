@@ -28,7 +28,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const allSections = Array.from(document.querySelectorAll('section'));
   const steps = allSections.filter(el => el.classList.contains('flow-section') || el.classList.contains('coreg-section'));
-  const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
+  const hideInitially = () => {
+    if (window.location.hostname !== "app.swipepages.com") {
+      steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
+      document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
+        el.style.display = 'none';
+      });
+    }
+  };
+  hideInitially();
+const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
   if (window.location.hostname !== "app.swipepages.com") {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
     document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
