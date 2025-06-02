@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
   const campaigns = {
     "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
