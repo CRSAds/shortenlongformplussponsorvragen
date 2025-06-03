@@ -31,6 +31,11 @@ export default function initFlow() {
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
   const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
 
+  // Zet t_id op basis van URL of fallback
+  const urlParams = new URLSearchParams(window.location.search);
+  const t_id = urlParams.get('t_id') || crypto.randomUUID();
+  localStorage.setItem('t_id', t_id);
+
   if (!window.location.hostname.includes("swipepages.com")) {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
     document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
@@ -46,13 +51,11 @@ export default function initFlow() {
           const gender = form.querySelector('input[name="gender"]:checked')?.value || '';
           const firstname = form.querySelector('#firstname')?.value.trim() || '';
           const lastname = form.querySelector('#lastname')?.value.trim() || '';
-          const dob_day = form.querySelector('#dob_day')?.value || '';
-          const dob_month = form.querySelector('#dob_month')?.value || '';
-          const dob_year = form.querySelector('#dob_year')?.value || '';
+          const dob_day = form.querySelector('#dob-day')?.value || '';
+          const dob_month = form.querySelector('#dob-month')?.value || '';
+          const dob_year = form.querySelector('#dob-year')?.value || '';
           const email = form.querySelector('#email')?.value.trim() || '';
-          const t_id = crypto.randomUUID();
 
-          // opslaan in localStorage
           localStorage.setItem('gender', gender);
           localStorage.setItem('firstname', firstname);
           localStorage.setItem('lastname', lastname);
@@ -60,7 +63,6 @@ export default function initFlow() {
           localStorage.setItem('dob_month', dob_month);
           localStorage.setItem('dob_year', dob_year);
           localStorage.setItem('email', email);
-          localStorage.setItem('t_id', t_id);
         }
 
         step.style.display = 'none';
@@ -85,7 +87,6 @@ export default function initFlow() {
         if (campaign.requiresLongForm) {
           longFormCampaigns.push(campaignId);
         } else {
-          // haal formgegevens nu opnieuw direct uit het DOM
           const form = document.querySelector('form');
           const payload = {
             cid: campaign.cid,
@@ -93,11 +94,11 @@ export default function initFlow() {
             gender: form?.querySelector('input[name="gender"]:checked')?.value || '',
             firstname: form?.querySelector('#firstname')?.value.trim() || '',
             lastname: form?.querySelector('#lastname')?.value.trim() || '',
-            dob_day: form?.querySelector('#dob_day')?.value || '',
-            dob_month: form?.querySelector('#dob_month')?.value || '',
-            dob_year: form?.querySelector('#dob_year')?.value || '',
+            dob_day: form?.querySelector('#dob-day')?.value || '',
+            dob_month: form?.querySelector('#dob-month')?.value || '',
+            dob_year: form?.querySelector('#dob-year')?.value || '',
             email: form?.querySelector('#email')?.value.trim() || '',
-            t_id: localStorage.getItem('t_id') || crypto.randomUUID(),
+            t_id: localStorage.getItem('t_id'),
             postcode: localStorage.getItem('postcode') || '',
             straat: localStorage.getItem('straat') || '',
             huisnummer: localStorage.getItem('huisnummer') || '',
