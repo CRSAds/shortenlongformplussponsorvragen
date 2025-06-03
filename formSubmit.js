@@ -46,7 +46,7 @@ export function buildPayload(campaign) {
 window.buildPayload = buildPayload;
 
 export function fetchLead(payload) {
-  fetch('/api/submit', {
+  fetch('https://shortenlongformplussponsorvragen.vercel.app/api/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
