@@ -1,4 +1,5 @@
 import { reloadImages } from './imageFix.js';
+import { fetchLead } from './formSubmit.js';
 
 const campaigns = {
   "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -31,11 +32,6 @@ export default function initFlow() {
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
   const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
 
-  // Zet t_id op basis van URL of fallback
-  const urlParams = new URLSearchParams(window.location.search);
-  const t_id = urlParams.get('t_id') || crypto.randomUUID();
-  localStorage.setItem('t_id', t_id);
-
   if (!window.location.hostname.includes("swipepages.com")) {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
     document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
@@ -55,6 +51,8 @@ export default function initFlow() {
           const dob_month = form.querySelector('#dob-month')?.value || '';
           const dob_year = form.querySelector('#dob-year')?.value || '';
           const email = form.querySelector('#email')?.value.trim() || '';
+          const urlParams = new URLSearchParams(window.location.search);
+          const t_id = urlParams.get('t_id') || crypto.randomUUID();
 
           localStorage.setItem('gender', gender);
           localStorage.setItem('firstname', firstname);
@@ -63,6 +61,7 @@ export default function initFlow() {
           localStorage.setItem('dob_month', dob_month);
           localStorage.setItem('dob_year', dob_year);
           localStorage.setItem('email', email);
+          localStorage.setItem('t_id', t_id);
         }
 
         step.style.display = 'none';
@@ -84,35 +83,31 @@ export default function initFlow() {
         const campaign = campaigns[campaignId];
         if (!campaign) return;
 
-        if (campaign.requiresLongForm) {
-          longFormCampaigns.push(campaignId);
-        } else {
-          const form = document.querySelector('form');
-          const payload = {
-            cid: campaign.cid,
-            sid: campaign.sid,
-            gender: form?.querySelector('input[name="gender"]:checked')?.value || '',
-            firstname: form?.querySelector('#firstname')?.value.trim() || '',
-            lastname: form?.querySelector('#lastname')?.value.trim() || '',
-            dob_day: form?.querySelector('#dob-day')?.value || '',
-            dob_month: form?.querySelector('#dob-month')?.value || '',
-            dob_year: form?.querySelector('#dob-year')?.value || '',
-            email: form?.querySelector('#email')?.value.trim() || '',
-            t_id: localStorage.getItem('t_id'),
-            postcode: localStorage.getItem('postcode') || '',
-            straat: localStorage.getItem('straat') || '',
-            huisnummer: localStorage.getItem('huisnummer') || '',
-            woonplaats: localStorage.getItem('woonplaats') || '',
-            telefoon: localStorage.getItem('telefoon') || ''
-          };
+        const form = document.querySelector('form');
+        const urlParams = new URLSearchParams(window.location.search);
 
-          fetch('https://shortenlongformplussponsorvragen.vercel.app/api/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
-            .then(res => console.log('Lead verzonden:', payload.cid))
-            .catch(err => console.error('Verzendfout:', err));
+        const payload = {
+          cid: campaign.cid,
+          sid: campaign.sid,
+          gender: form?.querySelector('input[name="gender"]:checked')?.value || '',
+          firstname: form?.querySelector('#firstname')?.value.trim() || '',
+          lastname: form?.querySelector('#lastname')?.value.trim() || '',
+          dob_day: form?.querySelector('#dob-day')?.value || '',
+          dob_month: form?.querySelector('#dob-month')?.value || '',
+          dob_year: form?.querySelector('#dob-year')?.value || '',
+          email: form?.querySelector('#email')?.value.trim() || '',
+          t_id: urlParams.get('t_id') || crypto.randomUUID(),
+          postcode: localStorage.getItem('postcode') || '',
+          straat: localStorage.getItem('straat') || '',
+          huisnummer: localStorage.getItem('huisnummer') || '',
+          woonplaats: localStorage.getItem('woonplaats') || '',
+          telefoon: localStorage.getItem('telefoon') || ''
+        };
+
+        if (campaign.requiresLongForm) {
+          longFormCampaigns.push(campaign);
+        } else {
+          fetchLead(payload);
         }
 
         step.style.display = 'none';
