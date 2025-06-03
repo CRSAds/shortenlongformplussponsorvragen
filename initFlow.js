@@ -26,33 +26,6 @@ const campaigns = {
 const longFormCampaigns = [];
 window.longFormCampaigns = longFormCampaigns;
 
-function storeFormDataFromStep(step) {
-  const form = step.querySelector('form');
-  if (!form) return;
-
-  requestAnimationFrame(() => {
-    const gender = form.querySelector('input[name="gender"]:checked')?.value;
-    const firstname = form.querySelector('#firstname')?.value.trim();
-    const lastname = form.querySelector('#lastname')?.value.trim();
-    const dob_day = form.querySelector('#dob_day')?.value;
-    const dob_month = form.querySelector('#dob_month')?.value;
-    const dob_year = form.querySelector('#dob_year')?.value;
-    const email = form.querySelector('#email')?.value.trim();
-    const t_id = crypto.randomUUID();
-
-    if (gender && firstname && lastname && dob_day && dob_month && dob_year && email) {
-      localStorage.setItem('gender', gender);
-      localStorage.setItem('firstname', firstname);
-      localStorage.setItem('lastname', lastname);
-      localStorage.setItem('dob_day', dob_day);
-      localStorage.setItem('dob_month', dob_month);
-      localStorage.setItem('dob_year', dob_year);
-      localStorage.setItem('email', email);
-      localStorage.setItem('t_id', t_id);
-    }
-  });
-}
-
 export default function initFlow() {
   const longFormSection = document.getElementById('long-form-section');
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
@@ -68,7 +41,27 @@ export default function initFlow() {
   steps.forEach((step, index) => {
     step.querySelectorAll('.flow-next').forEach(btn => {
       btn.addEventListener('click', () => {
-        storeFormDataFromStep(step);
+        const form = step.querySelector('form');
+        if (form) {
+          const gender = form.querySelector('input[name="gender"]:checked')?.value || '';
+          const firstname = form.querySelector('#firstname')?.value.trim() || '';
+          const lastname = form.querySelector('#lastname')?.value.trim() || '';
+          const dob_day = form.querySelector('#dob_day')?.value || '';
+          const dob_month = form.querySelector('#dob_month')?.value || '';
+          const dob_year = form.querySelector('#dob_year')?.value || '';
+          const email = form.querySelector('#email')?.value.trim() || '';
+          const t_id = crypto.randomUUID();
+
+          // opslaan in localStorage
+          localStorage.setItem('gender', gender);
+          localStorage.setItem('firstname', firstname);
+          localStorage.setItem('lastname', lastname);
+          localStorage.setItem('dob_day', dob_day);
+          localStorage.setItem('dob_month', dob_month);
+          localStorage.setItem('dob_year', dob_year);
+          localStorage.setItem('email', email);
+          localStorage.setItem('t_id', t_id);
+        }
 
         step.style.display = 'none';
         const next = steps[index + 1];
@@ -85,17 +78,40 @@ export default function initFlow() {
 
     step.querySelectorAll('.sponsor-optin').forEach(button => {
       button.addEventListener('click', () => {
-        storeFormDataFromStep(step);
-
         const campaignId = button.id;
-        if (campaignId && campaigns[campaignId]) {
-          const campaign = campaigns[campaignId];
-          if (campaign.requiresLongForm) {
-            longFormCampaigns.push(campaignId);
-          } else {
-            const payload = window.buildPayload(campaign);
-            window.fetchLead(payload);
-          }
+        const campaign = campaigns[campaignId];
+        if (!campaign) return;
+
+        if (campaign.requiresLongForm) {
+          longFormCampaigns.push(campaignId);
+        } else {
+          // haal formgegevens nu opnieuw direct uit het DOM
+          const form = document.querySelector('form');
+          const payload = {
+            cid: campaign.cid,
+            sid: campaign.sid,
+            gender: form?.querySelector('input[name="gender"]:checked')?.value || '',
+            firstname: form?.querySelector('#firstname')?.value.trim() || '',
+            lastname: form?.querySelector('#lastname')?.value.trim() || '',
+            dob_day: form?.querySelector('#dob_day')?.value || '',
+            dob_month: form?.querySelector('#dob_month')?.value || '',
+            dob_year: form?.querySelector('#dob_year')?.value || '',
+            email: form?.querySelector('#email')?.value.trim() || '',
+            t_id: localStorage.getItem('t_id') || crypto.randomUUID(),
+            postcode: localStorage.getItem('postcode') || '',
+            straat: localStorage.getItem('straat') || '',
+            huisnummer: localStorage.getItem('huisnummer') || '',
+            woonplaats: localStorage.getItem('woonplaats') || '',
+            telefoon: localStorage.getItem('telefoon') || ''
+          };
+
+          fetch('https://shortenlongformplussponsorvragen.vercel.app/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+            .then(res => console.log('Lead verzonden:', payload.cid))
+            .catch(err => console.error('Verzendfout:', err));
         }
 
         step.style.display = 'none';
