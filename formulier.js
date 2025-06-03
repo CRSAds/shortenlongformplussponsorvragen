@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
   const campaigns = {
     "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Preload all visible images
+  // Preload alle afbeeldingen direct
   document.querySelectorAll('img').forEach(img => {
     const src = img.getAttribute('src');
     if (src) {
@@ -47,23 +48,13 @@ document.addEventListener('DOMContentLoaded', function () {
   function reloadImages(section) {
     const images = section.querySelectorAll('img');
     images.forEach(img => {
-      const src = img.src;
-      img.src = '';
-      img.src = src;
+      const src = img.getAttribute('src');
+      if (src) {
+        img.removeAttribute('loading');
+        img.src = '';
+        img.src = src;
+      }
     });
-  }
-
-  function showNextSection(currentStep, index) {
-    currentStep.style.display = 'none';
-    const next = steps[index + 1];
-    if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
-      longFormSection.style.display = 'block';
-      reloadImages(longFormSection);
-    } else if (next) {
-      next.style.display = 'block';
-      reloadImages(next);
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   steps.forEach((step, index) => {
@@ -92,7 +83,16 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         }
 
-        showNextSection(step, index);
+        step.style.display = 'none';
+        const next = steps[index + 1];
+        if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
+          longFormSection.style.display = 'block';
+          reloadImages(longFormSection);
+        } else if (next) {
+          next.style.display = 'block';
+          reloadImages(next);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
 
@@ -105,11 +105,20 @@ document.addEventListener('DOMContentLoaded', function () {
             longFormCampaigns.push(campaignId);
           } else {
             const payload = buildPayload(campaign);
-            sendToProxy(payload);
+            fetchLead(payload);
           }
         }
 
-        showNextSection(step, index);
+        step.style.display = 'none';
+        const next = steps[index + 1];
+        if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
+          longFormSection.style.display = 'block';
+          reloadImages(longFormSection);
+        } else if (next) {
+          next.style.display = 'block';
+          reloadImages(next);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
   });
@@ -132,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
       longFormCampaigns.forEach(campaignId => {
         const campaign = campaigns[campaignId];
         const payload = buildPayload(campaign);
-        sendToProxy(payload);
+        fetchLead(payload);
       });
 
       longFormSection.style.display = 'none';
@@ -169,13 +178,13 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   }
 
-  function sendToProxy(payload) {
+  function fetchLead(payload) {
     fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
-    .then(res => console.log('Verzonden via proxy:', payload.cid))
-    .catch(err => console.error('Proxy fout:', err));
+    .then(res => console.log('Lead verzonden:', payload.cid))
+    .catch(err => console.error('Verzendfout:', err));
   }
 });
