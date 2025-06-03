@@ -59,6 +59,15 @@ function handleWin() {
   overlay.classList.add('show');
   triggerConfetti();
 
+  // Injecteer header boven button
+  const overlayContent = document.querySelector('.overlay-content');
+  if (overlayContent && !document.getElementById('win-title')) {
+    const h2 = document.createElement('h2');
+    h2.id = 'win-title';
+    h2.textContent = 'Super, je hebt ze allemaal gevonden!';
+    overlayContent.insertBefore(h2, overlayContent.firstChild);
+  }
+
   const nextButton = document.getElementById('to-form-button');
   if (nextButton) {
     nextButton.addEventListener('click', (e) => {
@@ -69,6 +78,10 @@ function handleWin() {
       if (next) {
         steps[currentIndex].style.display = 'none';
         next.style.display = 'block';
+
+        // ✅ Trigger lazyload om afbeeldingen te tonen
+        window.dispatchEvent(new Event('scroll'));
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
