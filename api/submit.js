@@ -28,10 +28,8 @@ export default async function handler(req, res) {
       t_id
     } = req.body;
 
-    // Debug log
     console.log('Ontvangen data van frontend:', req.body);
 
-    // Validatie op verplichte campagnevelden
     if (!cid || !sid) {
       console.error('Verplichte campagnegegevens ontbreken');
       return res.status(400).json({ success: false, message: 'Campagnegegevens ontbreken' });
@@ -50,15 +48,16 @@ export default async function handler(req, res) {
       f_4_lastname: lastname || '',
       f_1_email: email || '',
       f_5_dob: dob || '',
+      f_11_postcode: postcode || '',
+      f_6_address1: straat || '',
+      f_7_address2: huisnummer || '',
+      f_8_address3: '', // optioneel extra veld
+      f_9_towncity: woonplaats || '',
+      f_12_phone1: telefoon || '',
       f_17_ipaddress: ipaddress,
       f_55_optindate: optindate,
       f_1322_transaction_id: t_id || '',
-      f_1453_campagne_url: campagne_url,
-      f_6_postcode: postcode || '',
-      f_7_straat: straat || '',
-      f_8_huisnummer: huisnummer || '',
-      f_9_woonplaats: woonplaats || '',
-      f_10_telefoon: telefoon || ''
+      f_1453_campagne_url: campagne_url
     });
 
     const response = await fetch('https://crsadvertising.databowl.com/api/v1/lead', {
