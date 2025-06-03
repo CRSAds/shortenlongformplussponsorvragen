@@ -1,12 +1,9 @@
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end(); // Preflight OK
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
@@ -14,6 +11,8 @@ export default async function handler(req, res) {
 
   try {
     const {
+      cid,
+      sid,
       gender,
       firstname,
       lastname,
@@ -26,42 +25,16 @@ export default async function handler(req, res) {
       huisnummer,
       woonplaats,
       telefoon,
-      t_id,
-      campaignId
+      t_id
     } = req.body;
 
-    // Debug logging van inkomende data
+    // Debug log
     console.log('Ontvangen data van frontend:', req.body);
 
-    // Campagnegegevens ophalen obv ID
-    const campaigns = {
-      "campaign-mycollections": { cid: 1882, sid: 34 },
-      "campaign-unitedconsumers-man": { cid: 2905, sid: 34 },
-      "campaign-unitedconsumers-vrouw": { cid: 2906, sid: 34 },
-      "campaign-kiosk": { cid: 3499, sid: 34 },
-      "campaign-ad": { cid: 3532, sid: 34 },
-      "campaign-volkskrant": { cid: 3534, sid: 34 },
-      "campaign-parool": { cid: 4192, sid: 34 },
-      "campaign-trouw": { cid: 4193, sid: 34 },
-      "campaign-bndestem": { cid: 4200, sid: 34 },
-      "campaign-brabantsdagblad": { cid: 4198, sid: 34 },
-      "campaign-degelderlander": { cid: 4196, sid: 34 },
-      "campaign-destentor": { cid: 4199, sid: 34 },
-      "campaign-eindhovensdagblad": { cid: 4197, sid: 34 },
-      "campaign-pzc": { cid: 4194, sid: 34 },
-      "campaign-tubantia": { cid: 4195, sid: 34 },
-      "campaign-consubeheer": { cid: 4720, sid: 34 },
-      "campaign-generationzero": { cid: 4555, sid: 34 },
-      "campaign-hotelspecials": { cid: 4621, sid: 34 },
-      "campaign-raadselgids": { cid: 3697, sid: 34 },
-      "campaign-tuinmanieren": { cid: 4852, sid: 34 }
-    };
-
-    const campaign = campaigns[campaignId];
-
-    if (!campaign) {
-      console.error('Ongeldige campagne-ID:', campaignId);
-      return res.status(400).json({ success: false, message: 'Invalid campaign ID' });
+    // Validatie op verplichte campagnevelden
+    if (!cid || !sid) {
+      console.error('Verplichte campagnegegevens ontbreken');
+      return res.status(400).json({ success: false, message: 'Campagnegegevens ontbreken' });
     }
 
     const dob = `${dob_day?.padStart(2, '0')}/${dob_month?.padStart(2, '0')}/${dob_year}`;
@@ -70,13 +43,13 @@ export default async function handler(req, res) {
     const campagne_url = req.headers.referer || '';
 
     const params = new URLSearchParams({
-      cid: campaign.cid.toString(),
-      sid: campaign.sid.toString(),
+      cid: String(cid),
+      sid: String(sid),
       f_2_title: gender || '',
       f_3_firstname: firstname || '',
       f_4_lastname: lastname || '',
       f_1_email: email || '',
-      f_5_dob: dob,
+      f_5_dob: dob || '',
       f_17_ipaddress: ipaddress,
       f_55_optindate: optindate,
       f_1322_transaction_id: t_id || '',
@@ -95,7 +68,6 @@ export default async function handler(req, res) {
     });
 
     const result = await response.json();
-
     console.log('Databowl antwoord:', result);
 
     return res.status(200).json({ success: true, result });
