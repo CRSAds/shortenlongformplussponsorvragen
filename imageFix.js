@@ -1,8 +1,12 @@
 export function setupImageFix() {
-  // 1. Trigger lazyload door scroll event te simuleren
+  // Trigger scroll event bij paginalaad om lazyload mechanismes te activeren
+  window.dispatchEvent(new Event('scroll'));
+}
+
+export function reloadImages(section) {
+  // Trigger scroll event opnieuw bij sectie-wijziging
   window.dispatchEvent(new Event('scroll'));
 
-  // 2. Forceer herladen van zichtbare afbeeldingen
   const images = section.querySelectorAll('img');
   images.forEach(img => {
     if (img.dataset.src && !img.src.includes(img.dataset.src)) {
@@ -13,7 +17,6 @@ export function setupImageFix() {
       img.src = src;
     }
 
-    // 3. Verwijder mogelijk opacity:0 styles die lazyload blokken
     img.style.opacity = '1';
     img.style.visibility = 'visible';
   });
