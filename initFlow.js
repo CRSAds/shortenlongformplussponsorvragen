@@ -134,3 +134,7 @@ function fetchLead(payload) {
     .then(res => console.log('Lead verzonden:', payload.cid))
     .catch(err => console.error('Verzendfout:', err));
 }
+
+window.campaigns = campaigns;
+window.buildPayload = buildPayload;
+window.fetchLead = fetchLead;
