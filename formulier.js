@@ -35,15 +35,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function forceLoadImages(section) {
+  document.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src');
+    if (src) {
+      const preload = new Image();
+      preload.src = src;
+    }
+  });
+
+  function reloadImages(section) {
     const images = section.querySelectorAll('img');
     images.forEach(img => {
-      const dataSrc = img.getAttribute('data-src');
-      const dataSrcset = img.getAttribute('data-srcset');
-      if (dataSrc) img.src = dataSrc;
-      if (dataSrcset) img.srcset = dataSrcset;
-      img.style.opacity = 1;
-      img.classList.remove('lazyload', 'tatsu-image--lazyload');
+      const src = img.src;
+      img.src = '';
+      img.src = src;
     });
   }
 
@@ -77,10 +82,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const next = steps[index + 1];
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
-          forceLoadImages(longFormSection);
+          reloadImages(longFormSection);
         } else if (next) {
           next.style.display = 'block';
-          forceLoadImages(next);
+          reloadImages(next);
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
@@ -95,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
             longFormCampaigns.push(campaignId);
           } else {
             const payload = buildPayload(campaign);
-            fetchLead(payload);
+            sendToProxy(payload);
           }
         }
 
@@ -103,10 +108,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const next = steps[index + 1];
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
-          forceLoadImages(longFormSection);
+          reloadImages(longFormSection);
         } else if (next) {
           next.style.display = 'block';
-          forceLoadImages(next);
+          reloadImages(next);
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
@@ -131,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
       longFormCampaigns.forEach(campaignId => {
         const campaign = campaigns[campaignId];
         const payload = buildPayload(campaign);
-        fetchLead(payload);
+        sendToProxy(payload);
       });
 
       longFormSection.style.display = 'none';
@@ -142,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (next) {
         next.classList.remove('hide-on-live');
         next.style.removeProperty('display');
-        forceLoadImages(next);
+        reloadImages(next);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
@@ -168,13 +173,13 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   }
 
-  function fetchLead(payload) {
-    fetch('https://crsadvertising.databowl.com/api/v1/lead', {
+  function sendToProxy(payload) {
+    fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
-    .then(res => console.log('Lead verzonden:', payload.cid))
-    .catch(err => console.error('Verzendfout:', err));
+    .then(res => console.log('Verzonden via proxy:', payload.cid))
+    .catch(err => console.error('Proxy fout:', err));
   }
 });
