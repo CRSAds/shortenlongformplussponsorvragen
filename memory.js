@@ -23,10 +23,10 @@ function createCard(src) {
   card.classList.add('card');
   card.innerHTML = `
     <div class="front">
-      <img src="assets/img/card-icon.png" alt="">
+      <img src="https://shortenlongformplussponsorvragen.vercel.app/assets/card-icon.png" alt="">
     </div>
     <div class="back">
-      <img src="assets/img/${src}" alt="">
+      <img src="https://shortenlongformplussponsorvragen.vercel.app/assets/${src}" alt="">
     </div>
   `;
   card.addEventListener('click', () => flipCard(card, src));
@@ -109,7 +109,6 @@ if (board && overlay) {
 function triggerConfetti() {
   const container = document.getElementById('confetti-container');
   const origin = document.querySelector('.overlay-content');
-  const originRect = origin.getBoundingClientRect();
   const centerX = origin.offsetLeft + origin.offsetWidth / 2;
   const centerY = origin.offsetTop + origin.offsetHeight / 2;
 
