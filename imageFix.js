@@ -1,4 +1,4 @@
-export function reloadImages(section) {
+export function setupImageFix() {
   // 1. Trigger lazyload door scroll event te simuleren
   window.dispatchEvent(new Event('scroll'));
 
