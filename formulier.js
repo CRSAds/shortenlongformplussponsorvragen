@@ -35,21 +35,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Forceer preload van alle <img> tags
-  document.querySelectorAll('img').forEach(img => {
-    const src = img.getAttribute('src');
-    if (src) {
-      const preload = new Image();
-      preload.src = src;
-    }
-  });
-
-  function reloadImages(section) {
+  function forceLoadImages(section) {
     const images = section.querySelectorAll('img');
     images.forEach(img => {
-      const src = img.src;
-      img.src = '';
-      img.src = src;
+      const dataSrc = img.getAttribute('data-src');
+      const dataSrcset = img.getAttribute('data-srcset');
+      if (dataSrc) img.src = dataSrc;
+      if (dataSrcset) img.srcset = dataSrcset;
+      img.style.opacity = 1;
+      img.classList.remove('lazyload', 'tatsu-image--lazyload');
     });
   }
 
@@ -83,10 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const next = steps[index + 1];
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
-          reloadImages(longFormSection);
+          forceLoadImages(longFormSection);
         } else if (next) {
           next.style.display = 'block';
-          reloadImages(next);
+          forceLoadImages(next);
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
@@ -109,10 +103,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const next = steps[index + 1];
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
-          reloadImages(longFormSection);
+          forceLoadImages(longFormSection);
         } else if (next) {
           next.style.display = 'block';
-          reloadImages(next);
+          forceLoadImages(next);
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
@@ -148,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (next) {
         next.classList.remove('hide-on-live');
         next.style.removeProperty('display');
-        reloadImages(next);
+        forceLoadImages(next);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
