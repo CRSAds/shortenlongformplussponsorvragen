@@ -31,12 +31,13 @@ export default function initFlow() {
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
   const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
 
-  if (window.location.hostname !== "app.swipepages.com") {
-    steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
-    document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
-      el.style.display = 'none';
-    });
-  }
+if (window.location.hostname !== "app.swipepages.com") {
+  // Alleen live: verberg alle secties behalve de eerste stap
+  steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
+  document.querySelectorAll('.hide-on-live, #long-form-section').forEach(el => {
+    el.style.display = 'none';
+  });
+}
 
   steps.forEach((step, index) => {
     step.querySelectorAll('.flow-next').forEach(btn => {
