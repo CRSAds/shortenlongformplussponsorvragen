@@ -3,15 +3,38 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 8px;
   background: #fffde7;
   z-index: 9999;
   display: none;
+  padding: 8px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
 }
 
-#sponsor-progress-fill {
+.sponsor-progress-text {
+  font-size: 14px;
+  color: #ff6f00;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.sponsor-progress-bar {
+  height: 10px;
+  background: #ffe082;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.sponsor-progress-fill {
   height: 100%;
   width: 0%;
   background: linear-gradient(to right, #ffd54f, #ff6f00);
   transition: width 0.3s ease;
+}
+
+.sponsor-progress-count {
+  font-size: 12px;
+  color: #555;
+  text-align: right;
 }
