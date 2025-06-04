@@ -1,8 +1,5 @@
-// ivr.js (geïntegreerd pincode systeem met spinner)
-
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
-
   const affId = urlParams.get("aff_id") || "123";
   const offerId = urlParams.get("offer_id") || "234";
   const subId = urlParams.get("sub_id") || "345";
@@ -53,71 +50,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const visitPromise = registerVisit();
 
-  // Toon juiste IVR container
-  const ivrMobile = document.getElementById("ivr-mobile");
-  const ivrDesktop = document.getElementById("ivr-desktop");
-
-  if (window.innerWidth <= 768 && ivrMobile) {
-    ivrMobile.style.display = "block";
-  } else if (ivrDesktop) {
-    ivrDesktop.style.display = "block";
-  }
-
-  const mobileBtn = document.getElementById("show-pin-btn-mobile");
-  const desktopBtn = document.getElementById("show-pin-btn-desktop");
-
-  if (mobileBtn) {
-    mobileBtn.addEventListener("click", async function () {
-      mobileBtn.style.display = "none";
-      document.getElementById("pin-container-mobile").style.display = "block";
-
-      try {
-        const internalVisitId = await visitPromise;
-        const pinRes = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            clickId: transaction_id,
-            internalVisitId
-          })
-        });
-        const pinData = await pinRes.json();
-        if (pinData.pincode) {
-          animatePinRevealSpinner(pinData.pincode);
-        }
-      } catch (err) {
-        console.warn("Mobiele IVR mislukt:", err);
-      }
-    });
-  }
-
-  if (desktopBtn) {
-    desktopBtn.addEventListener("click", async function () {
-      desktopBtn.style.display = "none";
-      document.getElementById("pin-container-desktop").style.display = "block";
-
-      try {
-        const internalVisitId = await visitPromise;
-        const pinRes = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            clickId: transaction_id,
-            internalVisitId
-          })
-        });
-        const pinData = await pinRes.json();
-        if (pinData.pincode) {
-          animatePinRevealSpinner(pinData.pincode);
-        }
-      } catch (err) {
-        console.warn("Desktop IVR mislukt:", err);
-      }
-    });
-  }
-
-  function animatePinRevealSpinner(pin) {
-    const container = document.getElementById("pin-code-spinner");
+  function animatePinRevealSpinner(pin, targetId) {
+    const container = document.getElementById(targetId);
     if (!container) return;
 
     const digits = container.querySelectorAll('.digit-inner');
@@ -135,6 +69,59 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         inner.style.transform = `translateY(-${targetOffset}px)`;
       }, 100);
+    });
+  }
+
+  const mobileBtn = document.getElementById("show-pin-btn-mobile");
+  const desktopBtn = document.getElementById("show-pin-btn-desktop");
+
+  if (mobileBtn) {
+    mobileBtn.addEventListener("click", async function () {
+      mobileBtn.style.display = "none";
+      document.getElementById("pin-container-mobile").style.display = "block";
+
+      try {
+        const internalVisitId = await visitPromise;
+        const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            clickId: transaction_id,
+            internalVisitId
+          })
+        });
+        const data = await res.json();
+        if (data.pincode) {
+          animatePinRevealSpinner(data.pincode, "pin-code-spinner-mobile");
+        }
+      } catch (err) {
+        console.error("Mobiele PIN-fout:", err);
+      }
+    });
+  }
+
+  if (desktopBtn) {
+    desktopBtn.addEventListener("click", async function () {
+      desktopBtn.style.display = "none";
+      document.getElementById("pin-container-desktop").style.display = "block";
+
+      try {
+        const internalVisitId = await visitPromise;
+        const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            clickId: transaction_id,
+            internalVisitId
+          })
+        });
+        const data = await res.json();
+        if (data.pincode) {
+          animatePinRevealSpinner(data.pincode, "pin-code-spinner-desktop");
+        }
+      } catch (err) {
+        console.error("Desktop PIN-fout:", err);
+      }
     });
   }
 });
