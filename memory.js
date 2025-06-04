@@ -116,7 +116,18 @@ function updateProgress() {
 }
 
 if (board && overlay) {
-  startGame();
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        startGame();
+        observer.disconnect(); // slechts één keer starten
+      }
+    });
+  }, {
+    threshold: 0.5 // pas starten als minstens 50% zichtbaar is
+  });
+
+  observer.observe(board);
 }
 
 function triggerConfetti() {
