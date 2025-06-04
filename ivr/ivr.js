@@ -1,7 +1,10 @@
+// ivr.js (geïntegreerd pincode systeem met spinner)
+
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
-  const affId = urlParams.get("aff_id") || "234";
-  const offerId = urlParams.get("offer_id") || "123";
+
+  const affId = urlParams.get("aff_id") || "123";
+  const offerId = urlParams.get("offer_id") || "234";
   const subId = urlParams.get("sub_id") || "345";
 
   function getTransactionId() {
@@ -37,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
           subId2: subId
         })
       });
-
       const data = await res.json();
       if (data.internalVisitId) {
         localStorage.setItem("internalVisitId", data.internalVisitId);
@@ -52,24 +54,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const visitPromise = registerVisit();
 
   const mobileBtn = document.getElementById("show-pin-btn-mobile");
-  const mobileContainer = document.getElementById("pin-container-mobile");
-  const mobileBox = document.getElementById("pin-code-display-mobile");
-
   const desktopBtn = document.getElementById("show-pin-btn-desktop");
-  const desktopContainer = document.getElementById("pin-container-desktop");
-  const desktopBox = document.getElementById("pin-code-display-desktop");
 
-  const isMobile = /iPhone|Android/i.test(navigator.userAgent);
-  if (isMobile) {
-    document.getElementById("ivr-mobile")?.style.setProperty("display", "block");
-  } else {
-    document.getElementById("ivr-desktop")?.style.setProperty("display", "block");
-  }
-
-  function handleClick(button, container, box) {
-    button.addEventListener("click", async function () {
-      button.style.display = "none";
-      container.style.display = "block";
+  if (mobileBtn) {
+    mobileBtn.addEventListener("click", async function () {
+      mobileBtn.style.display = "none";
+      document.getElementById("pin-container-mobile").style.display = "block";
 
       try {
         const internalVisitId = await visitPromise;
@@ -83,36 +73,58 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         const pinData = await pinRes.json();
         if (pinData.pincode) {
-          animatePinReveal(box, pinData.pincode);
+          animatePinRevealSpinner(pinData.pincode);
         }
       } catch (err) {
-        console.warn("IVR request failed:", err);
+        console.warn("Mobiele IVR mislukt:", err);
       }
     });
   }
 
-  if (mobileBtn && mobileContainer && mobileBox) {
-    handleClick(mobileBtn, mobileContainer, mobileBox);
-  }
+  if (desktopBtn) {
+    desktopBtn.addEventListener("click", async function () {
+      desktopBtn.style.display = "none";
+      document.getElementById("pin-container-desktop").style.display = "block";
 
-  if (desktopBtn && desktopContainer && desktopBox) {
-    handleClick(desktopBtn, desktopContainer, desktopBox);
-  }
-
-  function animatePinReveal(el, finalPin) {
-    let frame = 0;
-    const duration = 1000;
-    const interval = 80;
-    const totalFrames = duration / interval;
-
-    const animator = setInterval(() => {
-      if (frame < totalFrames) {
-        el.innerText = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
-        frame++;
-      } else {
-        clearInterval(animator);
-        el.innerText = finalPin;
+      try {
+        const internalVisitId = await visitPromise;
+        const pinRes = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            clickId: transaction_id,
+            internalVisitId
+          })
+        });
+        const pinData = await pinRes.json();
+        if (pinData.pincode) {
+          animatePinRevealSpinner(pinData.pincode);
+        }
+      } catch (err) {
+        console.warn("Desktop IVR mislukt:", err);
       }
-    }, interval);
+    });
+  }
+
+  function animatePinRevealSpinner(pin) {
+    const container = document.getElementById("pin-code-spinner");
+    if (!container) return;
+
+    const digits = container.querySelectorAll('.digit-inner');
+    const pinStr = pin.toString().padStart(3, '0');
+
+    pinStr.split('').forEach((digit, index) => {
+      const inner = digits[index];
+      inner.innerHTML = '';
+      for (let i = 0; i <= 9; i++) {
+        const span = document.createElement('span');
+        span.textContent = i;
+        inner.appendChild(span);
+      }
+      const targetOffset = parseInt(digit, 10) * 64;
+      setTimeout(() => {
+        inner.style.transform = `translateY(-${targetOffset}px)`;
+      }, 100);
+    });
   }
 });
