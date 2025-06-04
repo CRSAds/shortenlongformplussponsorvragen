@@ -36,13 +36,17 @@
 }
 
 /* De gevulde balk */
-#sponsor-progress-fill {
-  background: linear-gradient(to right, #ffb300, #f57c00);
-  height: 100%;
-  width: 0%;
-  border-radius: 16px 0 0 16px;
-  transition: width 0.4s ease-in-out;
-  position: relative;
+#sponsor-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate(50%, -50%);
+  width: 32px;
+  height: 32px;
+  background-image: url('./assets/sun.png');
+  background-size: contain;
+  background-repeat: no-repeat;
   pointer-events: none;
 }
 
