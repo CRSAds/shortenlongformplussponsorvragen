@@ -65,6 +65,25 @@ export default function setupFormSubmit() {
   const section = document.getElementById('long-form-section');
   if (!btn || !section) return;
 
+  // Automatische focus voor geboortedatum
+  const dobDay = document.getElementById('dob_day');
+  const dobMonth = document.getElementById('dob_month');
+  const dobYear = document.getElementById('dob_year');
+
+  if (dobDay && dobMonth && dobYear) {
+    dobDay.addEventListener('input', () => {
+      if (dobDay.value.length === 2 || parseInt(dobDay.value[0]) >= 4) {
+        dobMonth.focus();
+      }
+    });
+
+    dobMonth.addEventListener('input', () => {
+      if (dobMonth.value.length === 2 || parseInt(dobMonth.value[0]) >= 2) {
+        dobYear.focus();
+      }
+    });
+  }
+
   btn.addEventListener('click', () => {
     const extraData = {
       postcode: document.getElementById('postcode')?.value.trim(),
