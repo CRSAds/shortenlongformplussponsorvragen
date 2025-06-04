@@ -1,12 +1,12 @@
 console.log("memory.js geladen!");
 
 const icons = [
-  'grape.png', 'grape.png',
-  'cherries.png', 'cherries.png',
-  'watermelon.png', 'watermelon.png',
-  'pineapple.png', 'pineapple.png',
-  'bananas.png', 'bananas.png',
-  'strawberry.png', 'strawberry.png'
+  'beach-umbrella.png', 'beach-umbrella.png',
+  'flamingo.png', 'flamingo.png',
+  'flip-flops.png', 'flip-flops.png',
+  'ice-cream.png', 'ice-cream.png',
+  'shirt.png', 'shirt.png',
+  'sun.png', 'sun.png'
 ];
 
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
