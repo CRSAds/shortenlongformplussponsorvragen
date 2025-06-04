@@ -1,36 +1,28 @@
-.pin-box {
-  background-color: #f5c9ff;
-  font-size: 48px;
-  font-weight: 800;
-  padding: 16px 32px;
-  border-radius: 16px;
-  display: inline-block;
-  min-width: 160px;
-  text-align: center;
-  margin: 16px auto;
-}
-
+/* Algemene knopstijl voor mobiel en desktop */
 .mobile-call-btn {
   background-color: #fe882b;
   color: white;
-  padding: 12px 20px;
+  padding: 12px 24px;
   border-radius: 999px;
   font-weight: bold;
   font-size: 18px;
   text-decoration: none;
   display: inline-block;
   text-align: center;
-  margin-top: 12px;
+  margin: 24px auto 16px;
+  cursor: pointer;
 }
 
+/* Tekst boven de pincode */
 .ivr-instructie {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   font-size: 20px;
   font-weight: 600;
   color: #333;
   line-height: 1.4;
 }
 
+/* Spinner container */
 .pin-spinner {
   display: flex;
   justify-content: center;
@@ -42,17 +34,20 @@
   width: fit-content;
 }
 
+/* Eén cijfervakje */
 .digit {
-  width: 40px;
+  width: 48px;
   height: 64px;
   overflow: hidden;
   background: #fff;
-  border-radius: 4px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Cijferstack voor animatie */
 .digit-inner {
   display: flex;
   flex-direction: column;
@@ -60,4 +55,5 @@
   font-size: 48px;
   font-weight: bold;
   color: #324048;
+  line-height: 64px;
 }
