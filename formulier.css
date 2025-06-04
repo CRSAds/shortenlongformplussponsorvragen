@@ -79,7 +79,7 @@ input[type="text"],
 input[type="email"],
 input[type="tel"] {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -90,12 +90,15 @@ input[type="tel"] {
 /* Geboortedatum */
 .dob-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   margin-top: 6px;
 }
 
 .dob-group input {
   flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
 }
 
 /* Knoppen */
