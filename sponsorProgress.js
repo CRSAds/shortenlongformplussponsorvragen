@@ -6,15 +6,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const sponsorSteps = Array.from(document.querySelectorAll('.sponsor-step'));
   const progressBar = document.createElement('div');
   progressBar.id = 'sponsor-progress-container';
-  progressBar.innerHTML = `<div id="sponsor-progress-fill"></div>`;
+  progressBar.innerHTML = `
+    <div id="sponsor-progress-text">Bijna klaar – nog enkele vragen te gaan! <span id="sponsor-progress-count"></span></div>
+    <div id="sponsor-progress-fill"></div>
+  `;
   document.body.appendChild(progressBar);
 
   const fill = document.getElementById('sponsor-progress-fill');
+  const count = document.getElementById('sponsor-progress-count');
   const total = sponsorSteps.length;
 
   function updateProgress(index) {
     const percent = Math.round(((index + 1) / total) * 100);
     fill.style.width = `${percent}%`;
+    count.textContent = `${index + 1} / ${total}`;
   }
 
   sponsorSteps.forEach((step, index) => {
