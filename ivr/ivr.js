@@ -21,6 +21,10 @@ document.addEventListener("DOMContentLoaded", function () {
   localStorage.setItem("offer_id", offerId);
   localStorage.setItem("sub_id", subId);
 
+  const isMobile = window.innerWidth < 768;
+  document.getElementById("ivr-mobile").style.display = isMobile ? "block" : "none";
+  document.getElementById("ivr-desktop").style.display = isMobile ? "none" : "block";
+
   async function registerVisit() {
     const stored = localStorage.getItem("internalVisitId");
     if (stored) return stored;
