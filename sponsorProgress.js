@@ -3,15 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!sponsorSteps.length) return;
 
   const total = sponsorSteps.length;
-  const progressWrapper = document.createElement('div');
-  progressWrapper.id = 'sponsor-progress-wrapper';
-  progressWrapper.innerHTML = `
+  const wrapper = document.createElement('div');
+  wrapper.id = 'sponsor-progress-wrapper';
+  wrapper.innerHTML = `
     <div id="sponsor-progress-text">Bijna klaar, nog enkele vragen</div>
     <div id="sponsor-progress-container">
       <div id="sponsor-progress-fill"></div>
     </div>
   `;
-  document.body.appendChild(progressWrapper);
+  document.body.appendChild(wrapper);
 
   const fill = document.getElementById('sponsor-progress-fill');
   const label = document.getElementById('sponsor-progress-text');
@@ -23,22 +23,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const observer = new MutationObserver(() => {
-    const visible = sponsorSteps.find(s => s.offsetParent !== null);
-    if (visible) {
-      progressWrapper.style.display = 'block';
-      const currentIndex = sponsorSteps.indexOf(visible);
-      updateProgress(currentIndex);
-    } else {
-      progressWrapper.style.display = 'none';
-    }
+    // Gebruik setTimeout om DOM update af te wachten
+    setTimeout(() => {
+      const visible = sponsorSteps.find(s => s.offsetParent !== null);
+      if (visible) {
+        const index = sponsorSteps.indexOf(visible);
+        updateProgress(index);
+        wrapper.style.display = 'block';
+      } else {
+        wrapper.style.display = 'none';
+      }
+    }, 30); // 30ms is voldoende, eerder 50ms getest
   });
 
   observer.observe(document.body, { attributes: true, childList: true, subtree: true });
 
-  // init
-  const visible = sponsorSteps.find(s => s.offsetParent !== null);
-  if (visible) {
-    progressWrapper.style.display = 'block';
-    updateProgress(sponsorSteps.indexOf(visible));
-  }
+  // Initiele update (ook met vertraging)
+  setTimeout(() => {
+    const visible = sponsorSteps.find(s => s.offsetParent !== null);
+    if (visible) {
+      const index = sponsorSteps.indexOf(visible);
+      updateProgress(index);
+      wrapper.style.display = 'block';
+    }
+  }, 100); // init iets ruimer (100ms) zodat Swipe Pages zijn eerste sectie kan tonen
 });
