@@ -20,6 +20,7 @@
   line-height: 1.4;
 }
 
+/* Spinner container */
 .pin-spinner {
   display: flex;
   justify-content: center;
@@ -31,6 +32,7 @@
   width: fit-content;
 }
 
+/* Eén cijfervakje */
 .digit {
   width: 48px;
   height: 64px;
@@ -43,6 +45,7 @@
   align-items: center;
 }
 
+/* Stapel van cijfers voor animatie */
 .digit-inner {
   display: flex;
   flex-direction: column;
@@ -51,4 +54,5 @@
   font-weight: bold;
   color: #324048;
   line-height: 64px;
+  height: 640px; /* 10 cijfers × 64px = volledige scrollhoogte */
 }
