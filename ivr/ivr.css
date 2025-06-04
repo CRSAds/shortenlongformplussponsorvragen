@@ -40,12 +40,9 @@
   background: #fff;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
 }
 
-/* Stapel van cijfers voor animatie */
 .digit-inner {
   display: flex;
   flex-direction: column;
@@ -53,6 +50,7 @@
   font-size: 48px;
   font-weight: bold;
   color: #324048;
+  height: 640px; /* 10 cijfers × 64px */
   line-height: 64px;
-  height: 640px; /* 10 cijfers × 64px = volledige scrollhoogte */
+  text-align: center;
 }
