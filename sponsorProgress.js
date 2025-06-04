@@ -1,64 +1,66 @@
-// sponsorProgress.js
-console.log('Sponsor Progressbar geladen');
-
 document.addEventListener("DOMContentLoaded", () => {
   const sponsorSteps = Array.from(document.querySelectorAll('.sponsor-step'));
-
   if (!sponsorSteps.length) return;
 
   const total = sponsorSteps.length;
-
-  // Maak wrapper en onderdelen
-  const wrapper = document.createElement('div');
-  wrapper.id = 'sponsor-progress-wrapper';
-  wrapper.innerHTML = `
-    <div id="sponsor-progress-text">Bijna klaar, nog enkele vragen</div>
-    <div id="sponsor-progress-container">
-      <div id="sponsor-progress-fill"></div>
+  const progressBar = document.createElement('div');
+  progressBar.id = 'sponsor-progress-container';
+  progressBar.innerHTML = `
+    <div class="sponsor-progress-wrapper">
+      <div id="sponsor-progress-label">Bijna klaar, nog enkele vragen</div>
+      <div id="sponsor-progress-bar">
+        <div id="sponsor-progress-fill">
+          <img src="assets/sun.png" alt="zon" class="sun-icon" />
+        </div>
+      </div>
     </div>
   `;
-  document.body.appendChild(wrapper);
+  document.body.appendChild(progressBar);
 
   const fill = document.getElementById('sponsor-progress-fill');
-  const text = document.getElementById('sponsor-progress-text');
+  const label = document.getElementById('sponsor-progress-label');
 
   function updateProgress(index) {
     const percent = Math.round(((index + 1) / total) * 100);
     fill.style.width = `${percent}%`;
-    text.textContent = `Bijna klaar, nog enkele vragen ${index + 1}/${total}`;
+    label.textContent = `Bijna klaar, nog enkele vragen ${index + 1}/${total}`;
   }
 
-  // Voeg event listeners toe aan sponsor-step knoppen
   sponsorSteps.forEach((step, index) => {
     const buttons = step.querySelectorAll('.sponsor-optin, .flow-next');
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         setTimeout(() => {
-          const next = sponsorSteps[index + 1];
-          if (next) {
-            updateProgress(index + 1);
-            wrapper.style.display = 'block';
+          const next = sponsorSteps.find(s => s.offsetParent !== null);
+          const nextIndex = sponsorSteps.indexOf(next);
+          if (nextIndex !== -1) {
+            updateProgress(nextIndex);
+            progressBar.style.display = 'block';
           } else {
-            wrapper.style.display = 'none';
+            progressBar.style.display = 'none';
           }
-        }, 100); // kleine vertraging voorkomt race conditions
+        }, 50); // kleine vertraging
       });
     });
   });
 
-  // Observer om zichtbare sectie te detecteren
+  // Initieel tonen als eerste stap zichtbaar is
+  const visible = sponsorSteps.find(s => s.offsetParent !== null);
+  if (visible) {
+    progressBar.style.display = 'block';
+    updateProgress(sponsorSteps.indexOf(visible));
+  }
+
+  // Observer voor dynamisch tonen/verbergen
   const observer = new MutationObserver(() => {
-    setTimeout(() => {
-      const visibleStep = sponsorSteps.find(step => step.offsetParent !== null);
-      if (visibleStep) {
-        const currentIndex = sponsorSteps.indexOf(visibleStep);
-        updateProgress(currentIndex);
-        wrapper.style.display = 'block';
-      } else {
-        wrapper.style.display = 'none';
-      }
-    }, 100); // ook hier vertraging voor veilige DOM-read
+    const visible = sponsorSteps.find(s => s.offsetParent !== null);
+    if (visible) {
+      progressBar.style.display = 'block';
+      updateProgress(sponsorSteps.indexOf(visible));
+    } else {
+      progressBar.style.display = 'none';
+    }
   });
 
-  observer.observe(document.body, { childList: true, subtree: true });
+  observer.observe(document.body, { attributes: true, childList: true, subtree: true });
 });
