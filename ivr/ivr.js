@@ -53,6 +53,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const visitPromise = registerVisit();
 
+  // Toon juiste IVR container
+  const ivrMobile = document.getElementById("ivr-mobile");
+  const ivrDesktop = document.getElementById("ivr-desktop");
+
+  if (window.innerWidth <= 768 && ivrMobile) {
+    ivrMobile.style.display = "block";
+  } else if (ivrDesktop) {
+    ivrDesktop.style.display = "block";
+  }
+
   const mobileBtn = document.getElementById("show-pin-btn-mobile");
   const desktopBtn = document.getElementById("show-pin-btn-desktop");
 
