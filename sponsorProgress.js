@@ -1,14 +1,18 @@
+// sponsorProgress.js
 console.log('Sponsor Progressbar geladen');
 
 document.addEventListener("DOMContentLoaded", () => {
   const sponsorSteps = Array.from(document.querySelectorAll('.sponsor-step'));
+
+  if (!sponsorSteps.length) return;
+
   const total = sponsorSteps.length;
 
-  // Progressbar container
+  // Maak wrapper en onderdelen
   const wrapper = document.createElement('div');
   wrapper.id = 'sponsor-progress-wrapper';
   wrapper.innerHTML = `
-    <div id="sponsor-progress-text"></div>
+    <div id="sponsor-progress-text">Bijna klaar, nog enkele vragen</div>
     <div id="sponsor-progress-container">
       <div id="sponsor-progress-fill"></div>
     </div>
@@ -24,32 +28,37 @@ document.addEventListener("DOMContentLoaded", () => {
     text.textContent = `Bijna klaar, nog enkele vragen ${index + 1}/${total}`;
   }
 
-  // Voeg click listeners toe
+  // Voeg event listeners toe aan sponsor-step knoppen
   sponsorSteps.forEach((step, index) => {
     const buttons = step.querySelectorAll('.sponsor-optin, .flow-next');
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        const next = sponsorSteps[index + 1];
-        if (next) {
-          updateProgress(index + 1);
-        } else {
-          wrapper.style.display = 'none';
-        }
+        setTimeout(() => {
+          const next = sponsorSteps[index + 1];
+          if (next) {
+            updateProgress(index + 1);
+            wrapper.style.display = 'block';
+          } else {
+            wrapper.style.display = 'none';
+          }
+        }, 100); // kleine vertraging voorkomt race conditions
       });
     });
   });
 
-  // Detecteer zichtbare sponsorvraag en toon/hide progress
+  // Observer om zichtbare sectie te detecteren
   const observer = new MutationObserver(() => {
-    const visibleStep = sponsorSteps.find(step => step.offsetParent !== null);
-    if (visibleStep) {
-      wrapper.style.display = 'block';
-      const currentIndex = sponsorSteps.indexOf(visibleStep);
-      updateProgress(currentIndex);
-    } else {
-      wrapper.style.display = 'none';
-    }
+    setTimeout(() => {
+      const visibleStep = sponsorSteps.find(step => step.offsetParent !== null);
+      if (visibleStep) {
+        const currentIndex = sponsorSteps.indexOf(visibleStep);
+        updateProgress(currentIndex);
+        wrapper.style.display = 'block';
+      } else {
+        wrapper.style.display = 'none';
+      }
+    }, 100); // ook hier vertraging voor veilige DOM-read
   });
 
-  observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+  observer.observe(document.body, { childList: true, subtree: true });
 });
