@@ -1,5 +1,3 @@
-// sponsorProgress.js
-
 console.log('Sponsor Progressbar geladen');
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,22 +24,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const buttons = step.querySelectorAll('.sponsor-optin, .flow-next');
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        const next = sponsorSteps[index + 1];
-        if (next) updateProgress(index + 1);
-        else progressBar.style.display = 'none';
+        setTimeout(() => {
+          const next = sponsorSteps[index + 1];
+          if (next) updateProgress(index + 1);
+          else progressBar.style.display = 'none';
+        }, 100); // wacht 100ms zodat DOM kan updaten
       });
     });
   });
 
   const observer = new MutationObserver(() => {
-    const visibleStep = sponsorSteps.find(step => step.offsetParent !== null);
-    if (visibleStep) {
-      progressBar.style.display = 'block';
-      const currentIndex = sponsorSteps.indexOf(visibleStep);
-      updateProgress(currentIndex);
-    } else {
-      progressBar.style.display = 'none';
-    }
+    setTimeout(() => {
+      const visibleStep = sponsorSteps.find(step => step.offsetParent !== null);
+      if (visibleStep) {
+        progressBar.style.display = 'block';
+        const currentIndex = sponsorSteps.indexOf(visibleStep);
+        updateProgress(currentIndex);
+      } else {
+        progressBar.style.display = 'none';
+      }
+    }, 100); // wacht ook hier 100ms
   });
 
   observer.observe(document.body, { attributes: true, childList: true, subtree: true });
