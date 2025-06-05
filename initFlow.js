@@ -31,7 +31,6 @@ window.longFormCampaigns = longFormCampaigns;
 export default function initFlow() {
   const longFormSection = document.getElementById('long-form-section');
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
-  const lastCoregIndex = steps.map(s => s.classList.contains('coreg-section')).lastIndexOf(true);
 
   if (!window.location.hostname.includes("swipepages.com")) {
     steps.forEach((el, i) => el.style.display = i === 0 ? 'block' : 'none');
@@ -66,7 +65,6 @@ export default function initFlow() {
           localStorage.setItem('email', email);
           localStorage.setItem('t_id', t_id);
 
-          // Alleen bij shortform verzenden naar LeadsNL
           if (isShortForm) {
             const payload = buildPayload(campaigns["campaign-leadsnl"]);
             fetchLead(payload);
@@ -75,7 +73,9 @@ export default function initFlow() {
 
         step.style.display = 'none';
         const next = steps[index + 1];
-        if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
+        const upcomingCoregs = steps.slice(index + 1).filter(s => s.classList.contains('coreg-section'));
+
+        if (upcomingCoregs.length === 0 && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
           reloadImages(longFormSection);
         } else if (next) {
@@ -102,13 +102,16 @@ export default function initFlow() {
 
         step.style.display = 'none';
         const next = steps[index + 1];
-        if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
+        const upcomingCoregs = steps.slice(index + 1).filter(s => s.classList.contains('coreg-section'));
+
+        if (upcomingCoregs.length === 0 && longFormCampaigns.length > 0 && longFormSection) {
           longFormSection.style.display = 'block';
           reloadImages(longFormSection);
         } else if (next) {
           next.style.display = 'block';
           reloadImages(next);
         }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
