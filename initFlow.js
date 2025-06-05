@@ -75,18 +75,11 @@ export default function initFlow() {
         const next = steps[index + 1];
         const upcomingCoregs = steps.slice(index + 1).filter(s => s.classList.contains('coreg-section'));
 
-       if (upcomingCoregs.length === 0 && longFormSection) {
-  if (longFormCampaigns.length === 0) {
-    // Geen long form nodig: verberg
-    longFormSection.style.display = 'none';
-  } else {
-    // Wel long form nodig: toon
-    longFormSection.style.display = 'block';
-    reloadImages(longFormSection);
-  }
-}
-          // Als er geen long form campagnes zijn, dan gewoon door naar volgende sectie
-          else if (next) {
+        if (upcomingCoregs.length === 0 && longFormSection) {
+          if (longFormCampaigns.length > 0) {
+            longFormSection.style.display = 'block';
+            reloadImages(longFormSection);
+          } else if (next) {
             next.style.display = 'block';
             reloadImages(next);
           }
@@ -116,8 +109,8 @@ export default function initFlow() {
         const next = steps[index + 1];
         const upcomingCoregs = steps.slice(index + 1).filter(s => s.classList.contains('coreg-section'));
 
-        if (upcomingCoregs.length === 0) {
-          if (longFormCampaigns.length > 0 && longFormSection) {
+        if (upcomingCoregs.length === 0 && longFormSection) {
+          if (longFormCampaigns.length > 0) {
             longFormSection.style.display = 'block';
             reloadImages(longFormSection);
           } else if (next) {
