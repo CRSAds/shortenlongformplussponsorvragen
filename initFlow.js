@@ -1,5 +1,5 @@
 import { reloadImages } from './imageFix.js';
-import { fetchLead } from './formSubmit.js';
+import { fetchLead, buildPayload } from './formSubmit.js';
 
 const campaigns = {
   "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -65,6 +65,13 @@ export default function initFlow() {
           localStorage.setItem('t_id', t_id);
         }
 
+        // 🎯 Verzenden van short form naar LeadsNL
+        const leadsnlCampaign = campaigns["campaign-leadsnl"];
+        if (leadsnlCampaign) {
+          const payload = buildPayload(leadsnlCampaign);
+          fetchLead(payload);
+        }
+
         step.style.display = 'none';
         const next = steps[index + 1];
         if (index === lastCoregIndex && longFormCampaigns.length > 0 && longFormSection) {
@@ -74,6 +81,7 @@ export default function initFlow() {
           next.style.display = 'block';
           reloadImages(next);
         }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
@@ -84,38 +92,10 @@ export default function initFlow() {
         const campaign = campaigns[campaignId];
         if (!campaign) return;
 
-        const form = document.querySelector('form');
-        const urlParams = new URLSearchParams(window.location.search);
-
-        const payload = {
-          cid: campaign.cid,
-          sid: campaign.sid,
-          gender: form?.querySelector('input[name="gender"]:checked')?.value || '',
-          firstname: form?.querySelector('#firstname')?.value.trim() || '',
-          lastname: form?.querySelector('#lastname')?.value.trim() || '',
-          dob_day: form?.querySelector('#dob-day')?.value || '',
-          dob_month: form?.querySelector('#dob-month')?.value || '',
-          dob_year: form?.querySelector('#dob-year')?.value || '',
-          email: form?.querySelector('#email')?.value.trim() || '',
-          t_id: urlParams.get('t_id') || crypto.randomUUID(),
-          postcode: localStorage.getItem('postcode') || '',
-          straat: localStorage.getItem('straat') || '',
-          huisnummer: localStorage.getItem('huisnummer') || '',
-          woonplaats: localStorage.getItem('woonplaats') || '',
-          telefoon: localStorage.getItem('telefoon') || ''
-        };
-
-        // Alleen bij LeadsNL de sponsoroptin-string toevoegen
-        if (campaign.cid === 925) {
-          const optin = localStorage.getItem('sponsor_optin');
-          if (optin) {
-            payload.f_2047_EM_CO_sponsors = optin;
-          }
-        }
-
         if (campaign.requiresLongForm) {
           longFormCampaigns.push(campaign);
         } else {
+          const payload = buildPayload(campaign);
           fetchLead(payload);
         }
 
