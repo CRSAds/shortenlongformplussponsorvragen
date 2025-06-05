@@ -65,25 +65,6 @@ export default function setupFormSubmit() {
   const section = document.getElementById('long-form-section');
   if (!btn || !section) return;
 
-  // Automatische focus voor geboortedatum
-  const dobDay = document.getElementById('dob_day');
-  const dobMonth = document.getElementById('dob_month');
-  const dobYear = document.getElementById('dob_year');
-
-  if (dobDay && dobMonth && dobYear) {
-    dobDay.addEventListener('input', () => {
-      if (dobDay.value.length === 2 || parseInt(dobDay.value[0]) >= 4) {
-        dobMonth.focus();
-      }
-    });
-
-    dobMonth.addEventListener('input', () => {
-      if (dobMonth.value.length === 2 || parseInt(dobMonth.value[0]) >= 2) {
-        dobYear.focus();
-      }
-    });
-  }
-
   btn.addEventListener('click', () => {
     const extraData = {
       postcode: document.getElementById('postcode')?.value.trim(),
@@ -116,4 +97,27 @@ export default function setupFormSubmit() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
+
+  // Autofocus logic voor geboortedatum
+  const day = document.getElementById("dob-day");
+  const month = document.getElementById("dob-month");
+  const year = document.getElementById("dob-year");
+
+  if (day) {
+    day.addEventListener("input", () => {
+      const val = day.value;
+      if (val.length === 2 || parseInt(val[0], 10) >= 4) {
+        month.focus();
+      }
+    });
+  }
+
+  if (month) {
+    month.addEventListener("input", () => {
+      const val = month.value;
+      if (val.length === 2 || parseInt(val[0], 10) >= 2) {
+        year.focus();
+      }
+    });
+  }
 }
