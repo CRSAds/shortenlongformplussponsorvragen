@@ -70,9 +70,9 @@ form {
 /* Labels en inputvelden */
 label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-weight: bold;
-  margin-top: 16px;
+  margin-top: 12px;
   font-size: 16px;
 }
 
@@ -80,7 +80,7 @@ input[type="text"],
 input[type="email"],
 input[type="tel"] {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   font-size: 16px; /* >= 16px voorkomt zoom op mobiel */
   border: 1px solid #ccc;
   border-radius: 8px;
