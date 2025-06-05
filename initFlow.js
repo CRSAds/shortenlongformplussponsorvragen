@@ -1,5 +1,5 @@
 import { reloadImages } from './imageFix.js';
-import { fetchLead } from './formSubmit.js';
+import { fetchLead, buildPayload } from './formSubmit.js';
 
 const campaigns = {
   "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -21,7 +21,8 @@ const campaigns = {
   "campaign-generationzero": { cid: 4555, sid: 34, requiresLongForm: true },
   "campaign-hotelspecials": { cid: 4621, sid: 34, requiresLongForm: false },
   "campaign-raadselgids": { cid: 3697, sid: 34, requiresLongForm: true },
-  "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false }
+  "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false },
+  "campaign-leadsnl": { cid: 925, sid: 34, requiresLongForm: false }
 };
 
 const longFormCampaigns = [];
@@ -62,6 +63,13 @@ export default function initFlow() {
           localStorage.setItem('dob_year', dob_year);
           localStorage.setItem('email', email);
           localStorage.setItem('t_id', t_id);
+
+          // Verstuur altijd ook naar LeadsNL
+          const leadsNLCampaign = campaigns["campaign-leadsnl"];
+          if (leadsNLCampaign) {
+            const payload = buildPayload(leadsNLCampaign);
+            fetchLead(payload);
+          }
         }
 
         step.style.display = 'none';
