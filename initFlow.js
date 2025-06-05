@@ -78,12 +78,14 @@ export default function initFlow() {
         const next = steps[index + 1];
         const upcomingCoregs = steps.slice(index + 1).filter(s => s.classList.contains('coreg-section'));
 
+        // Laat long form zien indien nodig, anders gewoon door
         if (upcomingCoregs.length === 0 && longFormSection) {
-          if (longFormCampaigns.length === 0) {
-            longFormSection.style.display = 'none';
-          } else {
+          if (longFormCampaigns.length > 0) {
             longFormSection.style.display = 'block';
             reloadImages(longFormSection);
+          } else if (next) {
+            next.style.display = 'block';
+            reloadImages(next);
           }
         } else if (next) {
           next.style.display = 'block';
@@ -112,11 +114,12 @@ export default function initFlow() {
         const upcomingCoregs = steps.slice(index + 1).filter(s => s.classList.contains('coreg-section'));
 
         if (upcomingCoregs.length === 0 && longFormSection) {
-          if (longFormCampaigns.length === 0) {
-            longFormSection.style.display = 'none';
-          } else {
+          if (longFormCampaigns.length > 0) {
             longFormSection.style.display = 'block';
             reloadImages(longFormSection);
+          } else if (next) {
+            next.style.display = 'block';
+            reloadImages(next);
           }
         } else if (next) {
           next.style.display = 'block';
