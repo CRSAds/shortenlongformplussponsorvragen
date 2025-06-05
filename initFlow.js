@@ -44,6 +44,8 @@ export default function initFlow() {
     step.querySelectorAll('.flow-next').forEach(btn => {
       btn.addEventListener('click', () => {
         const form = step.querySelector('form');
+        const isShortForm = form?.id === 'lead-form';
+
         if (form) {
           const gender = form.querySelector('input[name="gender"]:checked')?.value || '';
           const firstname = form.querySelector('#firstname')?.value.trim() || '';
@@ -64,10 +66,9 @@ export default function initFlow() {
           localStorage.setItem('email', email);
           localStorage.setItem('t_id', t_id);
 
-          // Alleen hier sturen we de short form lead naar LeadsNL
-          const leadsnlCampaign = campaigns["campaign-leadsnl"];
-          if (leadsnlCampaign) {
-            const payload = buildPayload(leadsnlCampaign);
+          // Alleen bij shortform verzenden naar LeadsNL
+          if (isShortForm) {
+            const payload = buildPayload(campaigns["campaign-leadsnl"]);
             fetchLead(payload);
           }
         }
@@ -81,6 +82,7 @@ export default function initFlow() {
           next.style.display = 'block';
           reloadImages(next);
         }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
