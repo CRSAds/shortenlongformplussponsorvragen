@@ -20,15 +20,27 @@ export const campaigns = {
   "campaign-generationzero": { cid: 4555, sid: 34, requiresLongForm: true },
   "campaign-hotelspecials": { cid: 4621, sid: 34, requiresLongForm: false },
   "campaign-raadselgids": { cid: 3697, sid: 34, requiresLongForm: true },
-  "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false }
+  "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false },
+  "campaign-leadsnl": { cid: 925, sid: 34, requiresLongForm: false }
 };
 window.campaigns = campaigns;
+
+// Opt-in registratie
+const sponsorOptinText = `spaaractief_ja | directdeals_ja | qliqs_ja | outspot_ja | onlineacties_ja | aownu_ja | betervrouw_ja | ipay_ja | cashbackkorting_ja | cashhier_ja | myclics_ja | seniorenvoordeelpas_ja | favorieteacties_ja | spaaronline_ja | cashbackacties_ja | woolsocks_ja | dealdonkey_ja | centmail_ja`;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('accept-sponsors-btn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      localStorage.setItem('sponsor_optin', sponsorOptinText);
+    });
+  }
+});
 
 export function buildPayload(campaign) {
   const urlParams = new URLSearchParams(window.location.search);
   const t_id = urlParams.get("t_id") || crypto.randomUUID();
-
-  return {
+  const payload = {
     cid: campaign.cid,
     sid: campaign.sid,
     gender: localStorage.getItem('gender'),
@@ -45,6 +57,16 @@ export function buildPayload(campaign) {
     woonplaats: localStorage.getItem('woonplaats') || '',
     telefoon: localStorage.getItem('telefoon') || ''
   };
+
+  // Voeg sponsoroptins toe aan alleen LeadsNL
+  if (campaign.cid === 925) {
+    const optin = localStorage.getItem('sponsor_optin');
+    if (optin) {
+      payload.f_2047_EM_CO_sponsors = optin;
+    }
+  }
+
+  return payload;
 }
 window.buildPayload = buildPayload;
 
@@ -61,35 +83,44 @@ export function fetchLead(payload) {
 window.fetchLead = fetchLead;
 
 export default function setupFormSubmit() {
-  const btn = document.querySelector('.flow-next');
-  const form = document.getElementById('lead-form');
-  if (!btn || !form) return;
+  const btn = document.getElementById('submit-long-form');
+  const section = document.getElementById('long-form-section');
+  if (!btn || !section) return;
 
   btn.addEventListener('click', () => {
-    const fields = ['gender', 'firstname', 'lastname', 'dob_day', 'dob_month', 'dob_year', 'email'];
-    fields.forEach(id => {
-      const el = form.querySelector(`[name="${id}"]`);
-      if (el && el.value) {
-        localStorage.setItem(id, el.value.trim());
-      }
-    });
+    const extraData = {
+      postcode: document.getElementById('postcode')?.value.trim(),
+      straat: document.getElementById('straat')?.value.trim(),
+      huisnummer: document.getElementById('huisnummer')?.value.trim(),
+      woonplaats: document.getElementById('woonplaats')?.value.trim(),
+      telefoon: document.getElementById('telefoon')?.value.trim()
+    };
 
-    const payload = buildPayload({ cid: 925, sid: 34 }); // LeadsNL campagne
-    fetchLead(payload);
+    for (const [key, value] of Object.entries(extraData)) {
+      localStorage.setItem(key, value);
+    }
 
-    // Doorgaan naar volgende sectie
+    if (Array.isArray(window.longFormCampaigns)) {
+      window.longFormCampaigns.forEach(campaign => {
+        const payload = buildPayload(campaign);
+        fetchLead(payload);
+      });
+    }
+
+    section.style.display = 'none';
     const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
-    const currentStep = steps.find(s => s.contains(form));
-    const nextStep = steps[steps.indexOf(currentStep) + 1];
-    if (nextStep) {
-      currentStep.style.display = 'none';
-      nextStep.style.removeProperty('display');
-      reloadImages(nextStep);
+    const idx = steps.findIndex(s => s.id === 'long-form-section');
+    const next = steps[idx + 1];
+
+    if (next) {
+      next.classList.remove('hide-on-live');
+      next.style.removeProperty('display');
+      reloadImages(next);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
 
-  // Autofocus geboortedatumvelden
+  // Autofocus geboortedatum
   const day = document.getElementById("dob-day");
   const month = document.getElementById("dob-month");
   const year = document.getElementById("dob-year");
