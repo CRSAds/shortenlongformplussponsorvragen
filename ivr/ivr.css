@@ -54,3 +54,24 @@
   line-height: 64px;
   text-align: center;
 }
+
+.call-now-button {
+  display: inline-block;
+  background-color: #fe882b;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 999px;
+  text-decoration: none;
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+  max-width: 280px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: background-color 0.2s ease;
+}
+
+.call-now-button:hover {
+  background-color: #e3721c;
+}
