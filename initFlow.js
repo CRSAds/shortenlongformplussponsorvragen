@@ -1,5 +1,5 @@
 import { reloadImages } from './imageFix.js';
-import { fetchLead, buildPayload } from './formSubmit.js';
+import { fetchLead } from './formSubmit.js';
 
 const campaigns = {
   "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
@@ -63,13 +63,6 @@ export default function initFlow() {
           localStorage.setItem('dob_year', dob_year);
           localStorage.setItem('email', email);
           localStorage.setItem('t_id', t_id);
-
-          // Verstuur altijd ook naar LeadsNL
-          const leadsNLCampaign = campaigns["campaign-leadsnl"];
-          if (leadsNLCampaign) {
-            const payload = buildPayload(leadsNLCampaign);
-            fetchLead(payload);
-          }
         }
 
         step.style.display = 'none';
@@ -111,6 +104,14 @@ export default function initFlow() {
           woonplaats: localStorage.getItem('woonplaats') || '',
           telefoon: localStorage.getItem('telefoon') || ''
         };
+
+        // Alleen bij LeadsNL de sponsoroptin-string toevoegen
+        if (campaign.cid === 925) {
+          const optin = localStorage.getItem('sponsor_optin');
+          if (optin) {
+            payload.f_2047_EM_CO_sponsors = optin;
+          }
+        }
 
         if (campaign.requiresLongForm) {
           longFormCampaigns.push(campaign);
