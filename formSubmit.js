@@ -61,7 +61,7 @@ export function buildPayload(campaign) {
 
   // Alleen bij LeadsNL: voeg optin string toe als aanwezig
 if (campaign.cid === 925) {
-  const optin = localStorage.getItem('f_2047_EM_CO_sponsors');
+  const optin = localStorage.getItem('sponsor_optin');
   if (optin) {
     payload.f_2047_EM_CO_sponsors = optin;
   }
