@@ -63,13 +63,13 @@ export default function initFlow() {
           localStorage.setItem('dob_year', dob_year);
           localStorage.setItem('email', email);
           localStorage.setItem('t_id', t_id);
-        }
 
-        // 🎯 Verzenden van short form naar LeadsNL
-        const leadsnlCampaign = campaigns["campaign-leadsnl"];
-        if (leadsnlCampaign) {
-          const payload = buildPayload(leadsnlCampaign);
-          fetchLead(payload);
+          // Alleen hier sturen we de short form lead naar LeadsNL
+          const leadsnlCampaign = campaigns["campaign-leadsnl"];
+          if (leadsnlCampaign) {
+            const payload = buildPayload(leadsnlCampaign);
+            fetchLead(payload);
+          }
         }
 
         step.style.display = 'none';
@@ -81,7 +81,6 @@ export default function initFlow() {
           next.style.display = 'block';
           reloadImages(next);
         }
-
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
