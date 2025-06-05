@@ -1,4 +1,3 @@
-// formSubmit.js
 import { reloadImages } from './imageFix.js';
 
 export const campaigns = {
@@ -62,90 +61,53 @@ export function fetchLead(payload) {
 window.fetchLead = fetchLead;
 
 export default function setupFormSubmit() {
-  const btn = document.getElementById('submit-long-form');
-  const section = document.getElementById('long-form-section');
-  if (btn && section) {
-    btn.addEventListener('click', () => {
-      const extraData = {
-        postcode: document.getElementById('postcode')?.value.trim(),
-        straat: document.getElementById('straat')?.value.trim(),
-        huisnummer: document.getElementById('huisnummer')?.value.trim(),
-        woonplaats: document.getElementById('woonplaats')?.value.trim(),
-        telefoon: document.getElementById('telefoon')?.value.trim()
-      };
+  const btn = document.querySelector('.flow-next');
+  const form = document.getElementById('lead-form');
+  if (!btn || !form) return;
 
-      for (const [key, value] of Object.entries(extraData)) {
-        localStorage.setItem(key, value);
+  btn.addEventListener('click', () => {
+    const fields = ['gender', 'firstname', 'lastname', 'dob_day', 'dob_month', 'dob_year', 'email'];
+    fields.forEach(id => {
+      const el = form.querySelector(`[name="${id}"]`);
+      if (el && el.value) {
+        localStorage.setItem(id, el.value.trim());
       }
+    });
 
-      if (Array.isArray(window.longFormCampaigns)) {
-        window.longFormCampaigns.forEach(campaign => {
-          const payload = buildPayload(campaign);
-          fetchLead(payload);
-        });
-      }
+    const payload = buildPayload({ cid: 925, sid: 34 }); // LeadsNL campagne
+    fetchLead(payload);
 
-      section.style.display = 'none';
-      const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
-      const idx = steps.findIndex(s => s.id === 'long-form-section');
-      const next = steps[idx + 1];
+    // Doorgaan naar volgende sectie
+    const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
+    const currentStep = steps.find(s => s.contains(form));
+    const nextStep = steps[steps.indexOf(currentStep) + 1];
+    if (nextStep) {
+      currentStep.style.display = 'none';
+      nextStep.style.removeProperty('display');
+      reloadImages(nextStep);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
 
-      if (next) {
-        next.classList.remove('hide-on-live');
-        next.style.removeProperty('display');
-        reloadImages(next);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Autofocus geboortedatumvelden
+  const day = document.getElementById("dob-day");
+  const month = document.getElementById("dob-month");
+  const year = document.getElementById("dob-year");
+
+  if (day) {
+    day.addEventListener("input", () => {
+      const val = day.value;
+      if (val.length === 2 || parseInt(val[0], 10) >= 4) {
+        month.focus();
       }
     });
   }
 
-  // ✅ Short Form fallback => LeadsNL campaign (cid 925)
-  const shortFormBtn = document.querySelector('.flow-next');
-  if (shortFormBtn) {
-    shortFormBtn.addEventListener('click', () => {
-      const gender = document.querySelector('input[name="gender"]:checked')?.value;
-      const firstname = document.getElementById('firstname')?.value.trim();
-      const lastname = document.getElementById('lastname')?.value.trim();
-      const dob_day = document.getElementById('dob-day')?.value.trim();
-      const dob_month = document.getElementById('dob-month')?.value.trim();
-      const dob_year = document.getElementById('dob-year')?.value.trim();
-      const email = document.getElementById('email')?.value.trim();
-
-      localStorage.setItem('gender', gender);
-      localStorage.setItem('firstname', firstname);
-      localStorage.setItem('lastname', lastname);
-      localStorage.setItem('dob_day', dob_day);
-      localStorage.setItem('dob_month', dob_month);
-      localStorage.setItem('dob_year', dob_year);
-      localStorage.setItem('email', email);
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const t_id = urlParams.get("t_id") || crypto.randomUUID();
-
-      const payload = {
-        cid: 925,
-        sid: 34,
-        gender,
-        firstname,
-        lastname,
-        dob_day,
-        dob_month,
-        dob_year,
-        email,
-        t_id
-      };
-
-      fetchLead(payload);
-
-      const current = shortFormBtn.closest('.flow-section');
-      const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
-      const index = steps.findIndex(s => s === current);
-      const next = steps[index + 1];
-      if (next) {
-        current.style.display = 'none';
-        next.style.removeProperty('display');
-        reloadImages(next);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (month) {
+    month.addEventListener("input", () => {
+      const val = month.value;
+      if (val.length === 2 || parseInt(val[0], 10) >= 2) {
+        year.focus();
       }
     });
   }
