@@ -25,7 +25,7 @@ export const campaigns = {
 };
 window.campaigns = campaigns;
 
-// Opt-in registratie
+// Sponsoroptin registratie (optioneel)
 const sponsorOptinText = `spaaractief_ja | directdeals_ja | qliqs_ja | outspot_ja | onlineacties_ja | aownu_ja | betervrouw_ja | ipay_ja | cashbackkorting_ja | cashhier_ja | myclics_ja | seniorenvoordeelpas_ja | favorieteacties_ja | spaaronline_ja | cashbackacties_ja | woolsocks_ja | dealdonkey_ja | centmail_ja`;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 export function buildPayload(campaign) {
   const urlParams = new URLSearchParams(window.location.search);
   const t_id = urlParams.get("t_id") || crypto.randomUUID();
+
   const payload = {
     cid: campaign.cid,
     sid: campaign.sid,
@@ -58,7 +59,7 @@ export function buildPayload(campaign) {
     telefoon: localStorage.getItem('telefoon') || ''
   };
 
-  // Voeg sponsoroptins toe aan alleen LeadsNL
+  // Alleen bij LeadsNL: voeg optin string toe als aanwezig
   if (campaign.cid === 925) {
     const optin = localStorage.getItem('sponsor_optin');
     if (optin) {
