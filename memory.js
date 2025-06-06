@@ -129,12 +129,16 @@ function startGame() {
 
 function updateProgress() {
   const fill = document.getElementById('progress-fill');
+  const timerText = document.getElementById('time-remaining');
+  
   const percentage = (timeLeft / timeLimit) * 100;
   fill.style.width = `${percentage}%`;
 
-  const timerLabel = document.getElementById('progress-timer');
-  if (timerLabel) {
-    timerLabel.textContent = `${timeLeft}s`;
+  // Update de zichtbare tijd
+  const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+  const seconds = (timeLeft % 60).toString().padStart(2, '0');
+  if (timerText) {
+    timerText.textContent = `${minutes}:${seconds}`;
   }
 }
 
