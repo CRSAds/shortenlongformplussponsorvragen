@@ -10,12 +10,12 @@ const iconSets = {
     'sun.png', 'sun.png'
   ],
   fruits: [
-    'grape.png', 'grape.png',
-    'cherries.png', 'cherries.png',
+    'grapes.png', 'grapes.png',
+    'berries.png', 'berries.png',
     'watermelon.png', 'watermelon.png',
-    'pineapple.png', 'pineapple.png',
+    'coconut.png', 'coconut.png',
     'bananas.png', 'bananas.png',
-    'strawberry.png', 'strawberry.png'
+    'orange.png', 'orange.png'
   ],
   flowers: [
     'rose.png', 'rose.png',
