@@ -14,13 +14,13 @@ body {
 }
 
 .progress-bar {
-  position: relative; /* <== deze regel toevoegen */
+  position: relative;
   width: 60%;
   height: 14px;
   background: #ccc;
   border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 24px;
+  margin: 0 auto 24px auto; /* gecentreerd */
 }
 
 .progress-fill {
