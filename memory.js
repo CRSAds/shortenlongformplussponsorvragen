@@ -27,7 +27,6 @@ const iconSets = {
   ]
 };
 
-// Haal gewenste set op uit localStorage
 const selectedSetName = localStorage.getItem('memory_iconset') || 'summer';
 const icons = iconSets[selectedSetName] || iconSets.summer;
 
@@ -132,6 +131,17 @@ function updateProgress() {
   const fill = document.getElementById('progress-fill');
   const percentage = (timeLeft / timeLimit) * 100;
   fill.style.width = `${percentage}%`;
+
+  const timerEl = document.getElementById('time-remaining');
+  if (timerEl) {
+    timerEl.textContent = formatTime(timeLeft);
+  }
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
 }
 
 if (board && overlay) {
