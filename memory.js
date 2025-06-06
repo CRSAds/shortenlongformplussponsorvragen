@@ -1,13 +1,35 @@
 console.log("memory.js geladen!");
 
-const icons = [
-  'beach-umbrella.png', 'beach-umbrella.png',
-  'flamingo.png', 'flamingo.png',
-  'flip-flops.png', 'flip-flops.png',
-  'ice-cream.png', 'ice-cream.png',
-  'shirt.png', 'shirt.png',
-  'sun.png', 'sun.png'
-];
+const iconSets = {
+  summer: [
+    'beach-umbrella.png', 'beach-umbrella.png',
+    'flamingo.png', 'flamingo.png',
+    'flip-flops.png', 'flip-flops.png',
+    'ice-cream.png', 'ice-cream.png',
+    'shirt.png', 'shirt.png',
+    'sun.png', 'sun.png'
+  ],
+  fruits: [
+    'grape.png', 'grape.png',
+    'cherries.png', 'cherries.png',
+    'watermelon.png', 'watermelon.png',
+    'pineapple.png', 'pineapple.png',
+    'bananas.png', 'bananas.png',
+    'strawberry.png', 'strawberry.png'
+  ],
+  flowers: [
+    'rose.png', 'rose.png',
+    'tulip.png', 'tulip.png',
+    'daisy.png', 'daisy.png',
+    'sunflower.png', 'sunflower.png',
+    'orchid.png', 'orchid.png',
+    'lily.png', 'lily.png'
+  ]
+};
+
+// Haal gewenste set op uit localStorage
+const selectedSetName = localStorage.getItem('memory_iconset') || 'summer';
+const icons = iconSets[selectedSetName] || iconSets.summer;
 
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
 const board = document.getElementById('game-board');
@@ -26,7 +48,7 @@ function createCard(src) {
       <img src="https://shortenlongformplussponsorvragen.vercel.app/assets/card-icon.png" alt="">
     </div>
     <div class="back">
-      <img src="https://shortenlongformplussponsorvragen.vercel.app/assets/${src}" alt="">
+      <img src="https://shortenlongformplussponsorvragen.vercel.app/assets/${selectedSetName}/${src}" alt="">
     </div>
   `;
   card.addEventListener('click', () => flipCard(card, src));
@@ -59,7 +81,6 @@ function handleWin() {
   overlay.classList.add('show');
   triggerConfetti();
 
-  // Injecteer header boven button
   const overlayContent = document.querySelector('.overlay-content');
   if (overlayContent && !document.getElementById('win-title')) {
     const h2 = document.createElement('h2');
@@ -79,9 +100,7 @@ function handleWin() {
         steps[currentIndex].style.display = 'none';
         next.style.display = 'block';
 
-        // ✅ Trigger lazyload om afbeeldingen te tonen
         window.dispatchEvent(new Event('scroll'));
-
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
@@ -120,11 +139,11 @@ if (board && overlay) {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         startGame();
-        observer.disconnect(); // slechts één keer starten
+        observer.disconnect();
       }
     });
   }, {
-    threshold: 0.5 // pas starten als minstens 50% zichtbaar is
+    threshold: 0.5
   });
 
   observer.observe(board);
