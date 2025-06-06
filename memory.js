@@ -151,9 +151,9 @@ function formatTime(seconds) {
 if (board && overlay) {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && board.offsetParent !== null) {
         startGame();
-        observer.disconnect();
+        observer.disconnect(); // slechts één keer starten
       }
     });
   }, {
