@@ -14,8 +14,9 @@ body {
 }
 
 .progress-bar {
-  width: 100%;
-  height: 12px;
+  position: relative; /* <== deze regel toevoegen */
+  width: 60%;
+  height: 14px;
   background: #ccc;
   border-radius: 6px;
   overflow: hidden;
