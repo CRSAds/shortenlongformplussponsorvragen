@@ -132,9 +132,9 @@ function updateProgress() {
   const percentage = (timeLeft / timeLimit) * 100;
   fill.style.width = `${percentage}%`;
 
-  const timerEl = document.getElementById('time-remaining');
-  if (timerEl) {
-    timerEl.textContent = formatTime(timeLeft);
+  const timerLabel = document.getElementById('progress-timer');
+  if (timerLabel) {
+    timerLabel.textContent = `${timeLeft}s`;
   }
 }
 
