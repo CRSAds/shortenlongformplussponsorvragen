@@ -32,6 +32,12 @@ export default function initFlow() {
           console.log(`Flow-next sponsor-next: set ${campaign.coregAnswerKey} → ${btn.innerText.trim()}`);
         }
 
+        // ✅ EXTRA FIX → als dit de voorwaarden-section is + flow-next button ZONDER id → sponsor_optin wissen!
+        if (step.id === 'voorwaarden-section' && !btn.id) {
+          localStorage.removeItem('sponsor_optin');
+          console.log('Flow-next zonder accept → sponsor_optin verwijderd');
+        }
+
         const form = step.querySelector('form');
         const isShortForm = form?.id === 'lead-form';
 
