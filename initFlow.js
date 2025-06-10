@@ -23,12 +23,6 @@ export default function initFlow() {
         const isCoregFlowStep = step.id?.startsWith('campaign-') && step.classList.contains('sponsor-step') && !btn.classList.contains('sponsor-next');
         if (isCoregFlowStep) {
           console.log(`Coreg-flow (flow-section sponsor-step) zonder sponsor-next → flow stopt hier → flow gaat verder naar volgende flow-section`);
-
-          const currentStep = document.querySelector(`.flow-section[style*="display: block"], .coreg-section[style*="display: block"]`);
-          const flowNextBtn = currentStep?.querySelector('.flow-next');
-          if (flowNextBtn && flowNextBtn !== btn) {
-            flowNextBtn.click();
-          }
           return;
         }
 
