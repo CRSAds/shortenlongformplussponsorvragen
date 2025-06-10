@@ -26,7 +26,8 @@ export default async function handler(req, res) {
       woonplaats,
       telefoon,
       t_id,
-      f_2014_coreg_answer
+      f_2014_coreg_answer,
+      f_1453_campagne_url // ✅ campagne_url nu vanaf frontend (betrouwbaarder dan referer!)
     } = req.body;
 
     console.log('Ontvangen data van frontend:', req.body);
@@ -39,10 +40,6 @@ export default async function handler(req, res) {
     const dob = `${dob_day?.padStart(2, '0')}/${dob_month?.padStart(2, '0')}/${dob_year}`;
     const ipaddress = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
     const optindate = new Date().toISOString().split('.')[0] + '+0000';
-
-    // ✅ Campagne URL nu correct zonder query params:
-    const campagne_url_full = req.headers.referer || '';
-    const campagne_url = campagne_url_full.split('?')[0];
 
     const params = new URLSearchParams({
       cid: String(cid),
@@ -62,7 +59,7 @@ export default async function handler(req, res) {
       f_55_optindate: optindate,
       f_1322_transaction_id: t_id || '',
       f_2014_coreg_answer: f_2014_coreg_answer || '',
-      f_1453_campagne_url: campagne_url,
+      f_1453_campagne_url: f_1453_campagne_url || '',
       f_2047_EM_CO_sponsors: req.body.f_2047_EM_CO_sponsors || ''
     });
 
