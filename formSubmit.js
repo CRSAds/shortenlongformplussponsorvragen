@@ -42,7 +42,7 @@ export function buildPayload(campaign) {
 
   // Nieuw: coreg_answer automatisch toevoegen indien relevant
   if (campaign.coregAnswerKey) {
-    payload.coreg_answer = localStorage.getItem(campaign.coregAnswerKey) || '';
+    payload.f_2014_coreg_answer = localStorage.getItem(campaign.coregAnswerKey) || '';
   }
 
   // Alleen bij LeadsNL: voeg optin string toe als aanwezig
