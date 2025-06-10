@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-export function buildPayload(campaign) {
+export function buildPayload(campaign, options = { includeSponsors: true }) {
   const urlParams = new URLSearchParams(window.location.search);
   const t_id = urlParams.get("t_id") || crypto.randomUUID();
 
@@ -36,20 +36,20 @@ export function buildPayload(campaign) {
     woonplaats: localStorage.getItem('woonplaats') || '',
     telefoon: localStorage.getItem('telefoon') || '',
 
-    // Nieuw: campaignId meesturen zodat backend altijd weet welke campagne
+    // campaignId meesturen (optioneel)
     campaignId: Object.keys(sponsorCampaigns).find(key => sponsorCampaigns[key].cid === campaign.cid)
   };
 
-  // Nieuw: coreg_answer automatisch toevoegen indien relevant
+  // coreg_answer (indien relevant)
   if (campaign.coregAnswerKey) {
     payload.f_2014_coreg_answer = localStorage.getItem(campaign.coregAnswerKey) || '';
   }
 
-  // Nieuw: f_1453_campagne_url → volledige page URL (zonder query params)
+  // f_1453_campagne_url
   payload.f_1453_campagne_url = window.location.origin + window.location.pathname;
 
-  // Alleen bij LeadsNL: voeg optin string toe als aanwezig
-  if (campaign.cid === 925) {
+  // EM_CO_sponsors → ALLEEN meesturen als expliciet toegestaan
+  if (campaign.cid === 925 && options.includeSponsors) {
     const optin = localStorage.getItem('sponsor_optin');
     if (optin) {
       payload.f_2047_EM_CO_sponsors = optin;
