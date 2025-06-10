@@ -1,29 +1,6 @@
 import { reloadImages } from './imageFix.js';
 import { fetchLead, buildPayload } from './formSubmit.js';
-
-const campaigns = {
-  "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
-  "campaign-unitedconsumers-man": { cid: 2905, sid: 34, requiresLongForm: true },
-  "campaign-unitedconsumers-vrouw": { cid: 2906, sid: 34, requiresLongForm: true },
-  "campaign-kiosk": { cid: 3499, sid: 34, requiresLongForm: false },
-  "campaign-ad": { cid: 3532, sid: 34, requiresLongForm: false },
-  "campaign-volkskrant": { cid: 3534, sid: 34, requiresLongForm: false },
-  "campaign-parool": { cid: 4192, sid: 34, requiresLongForm: false },
-  "campaign-trouw": { cid: 4193, sid: 34, requiresLongForm: false },
-  "campaign-bndestem": { cid: 4200, sid: 34, requiresLongForm: false },
-  "campaign-brabantsdagblad": { cid: 4198, sid: 34, requiresLongForm: false },
-  "campaign-degelderlander": { cid: 4196, sid: 34, requiresLongForm: false },
-  "campaign-destentor": { cid: 4199, sid: 34, requiresLongForm: false },
-  "campaign-eindhovensdagblad": { cid: 4197, sid: 34, requiresLongForm: false },
-  "campaign-pzc": { cid: 4194, sid: 34, requiresLongForm: false },
-  "campaign-tubantia": { cid: 4195, sid: 34, requiresLongForm: false },
-  "campaign-consubeheer": { cid: 4720, sid: 34, requiresLongForm: true },
-  "campaign-generationzero": { cid: 4555, sid: 34, requiresLongForm: true },
-  "campaign-hotelspecials": { cid: 4621, sid: 34, requiresLongForm: false },
-  "campaign-raadselgids": { cid: 3697, sid: 34, requiresLongForm: true },
-  "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false },
-  "campaign-leadsnl": { cid: 925, sid: 34, requiresLongForm: false }
-};
+import sponsorCampaigns from './sponsorCampaigns.js'; // nieuwe centrale campaigns lijst
 
 const longFormCampaigns = [];
 window.longFormCampaigns = longFormCampaigns;
@@ -68,7 +45,7 @@ export default function initFlow() {
           if (isShortForm) {
             const sponsorOptin = localStorage.getItem('sponsor_optin');
             if (sponsorOptin) {
-              const payload = buildPayload(campaigns["campaign-leadsnl"]);
+              const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"]);
               fetchLead(payload);
             }
           }
@@ -99,7 +76,7 @@ export default function initFlow() {
     step.querySelectorAll('.sponsor-optin').forEach(button => {
       button.addEventListener('click', () => {
         const campaignId = button.id;
-        const campaign = campaigns[campaignId];
+        const campaign = sponsorCampaigns[campaignId];
         if (!campaign) return;
 
         if (campaign.requiresLongForm) {
@@ -130,4 +107,56 @@ export default function initFlow() {
       });
     });
   });
+
+  // Automatisch coreg flow init voor sponsors met hasCoregFlow
+  Object.entries(sponsorCampaigns).forEach(([campaignId, config]) => {
+    if (config.hasCoregFlow && config.coregAnswerKey) {
+      initGenericCoregSponsorFlow(campaignId, config.coregAnswerKey);
+    }
+  });
+}
+
+const coregAnswers = {};
+window.coregAnswers = coregAnswers;
+
+function initGenericCoregSponsorFlow(sponsorId, coregAnswerKey) {
+  coregAnswers[sponsorId] = [];
+
+  const allSections = document.querySelectorAll(`[id^="campaign-${sponsorId}"]`);
+  allSections.forEach(section => {
+    const buttons = section.querySelectorAll('.sponsor-optin');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const answerText = button.innerText.trim();
+        coregAnswers[sponsorId].push(answerText);
+
+        const nextStepId = button.getAttribute('data-next-step-id');
+        section.style.display = 'none';
+
+        if (nextStepId) {
+          const nextSection = document.getElementById(nextStepId);
+          if (nextSection) {
+            nextSection.style.display = 'block';
+          } else {
+            handleGenericNextCoregSponsor(sponsorId, coregAnswerKey);
+          }
+        } else {
+          handleGenericNextCoregSponsor(sponsorId, coregAnswerKey);
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  });
+}
+
+function handleGenericNextCoregSponsor(sponsorId, coregAnswerKey) {
+  const combinedAnswer = coregAnswers[sponsorId].join(' - ');
+  localStorage.setItem(coregAnswerKey, combinedAnswer);
+
+  console.log(`Sponsor ${sponsorId} → coreg_answer = ${combinedAnswer}`);
+
+  const currentCoregSection = document.querySelector(`.coreg-section[style*="display: block"]`);
+  const flowNextBtn = currentCoregSection?.querySelector('.flow-next');
+  flowNextBtn?.click();
 }
