@@ -20,11 +20,7 @@ export default function initFlow() {
     // FLOW-NEXT HANDLER
     step.querySelectorAll('.flow-next').forEach(btn => {
       btn.addEventListener('click', () => {
-        const isCoregFlowStep = step.id?.startsWith('campaign-') && step.classList.contains('sponsor-step') && !btn.classList.contains('sponsor-next');
-        if (isCoregFlowStep) {
-          console.log(`Coreg-flow (flow-section sponsor-step) zonder sponsor-next → flow stopt hier → flow gaat verder naar volgende flow-section`);
-          return;
-        }
+        const skipNext = btn.classList.contains('skip-next-section');
 
         const form = step.querySelector('form');
         const isShortForm = form?.id === 'lead-form';
@@ -59,7 +55,7 @@ export default function initFlow() {
         }
 
         step.style.display = 'none';
-        const next = steps[index + 1];
+        const next = skipNext ? steps[index + 2] : steps[index + 1];
 
         if (next) {
           next.style.display = 'block';
