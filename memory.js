@@ -26,12 +26,12 @@ const iconSets = {
     'mouth.png', 'mouth.png'
   ],
     pretpark: [
-    'achtbaan.png', 'achtbaan.png',
-    'jongleren.png', 'jongleren.png',
+    'rollorcoaster.png', 'rollercoaster.png',
+    'amusement-park.png', 'amusement-park.png',
     'tent.png', 'tent.png',
-    'auto.png', 'auto.png',
-    'boot.png', 'boot.png',
-    'molen.png', 'molen.png'
+    'bumper-car.png', 'bumper-car.png',
+    'pirate-ship.png', 'pirate-ship.png',
+    'spinning-swing.png', 'spinning-swing.png'
   ],
   flowers: [
     'rose.png', 'rose.png',
