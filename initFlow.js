@@ -61,12 +61,9 @@ export default function initFlow() {
           localStorage.setItem('email', email);
           localStorage.setItem('t_id', t_id);
 
-          if (isShortForm) {
-            const sponsorOptin = localStorage.getItem('sponsor_optin');
-            if (sponsorOptin) {
-              const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"]);
-              fetchLead(payload);
-            }
+         if (isShortForm) {
+          const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"]);
+          fetchLead(payload);
           }
         }
 
