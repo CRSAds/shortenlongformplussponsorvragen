@@ -1,29 +1,7 @@
 import { reloadImages } from './imageFix.js';
+import sponsorCampaigns from './sponsorCampaigns.js';
 
-export const campaigns = {
-  "campaign-mycollections": { cid: 1882, sid: 34, requiresLongForm: true },
-  "campaign-unitedconsumers-man": { cid: 2905, sid: 34, requiresLongForm: true },
-  "campaign-unitedconsumers-vrouw": { cid: 2906, sid: 34, requiresLongForm: true },
-  "campaign-kiosk": { cid: 3499, sid: 34, requiresLongForm: false },
-  "campaign-ad": { cid: 3532, sid: 34, requiresLongForm: false },
-  "campaign-volkskrant": { cid: 3534, sid: 34, requiresLongForm: false },
-  "campaign-parool": { cid: 4192, sid: 34, requiresLongForm: false },
-  "campaign-trouw": { cid: 4193, sid: 34, requiresLongForm: false },
-  "campaign-bndestem": { cid: 4200, sid: 34, requiresLongForm: false },
-  "campaign-brabantsdagblad": { cid: 4198, sid: 34, requiresLongForm: false },
-  "campaign-degelderlander": { cid: 4196, sid: 34, requiresLongForm: false },
-  "campaign-destentor": { cid: 4199, sid: 34, requiresLongForm: false },
-  "campaign-eindhovensdagblad": { cid: 4197, sid: 34, requiresLongForm: false },
-  "campaign-pzc": { cid: 4194, sid: 34, requiresLongForm: false },
-  "campaign-tubantia": { cid: 4195, sid: 34, requiresLongForm: false },
-  "campaign-consubeheer": { cid: 4720, sid: 34, requiresLongForm: true },
-  "campaign-generationzero": { cid: 4555, sid: 34, requiresLongForm: true },
-  "campaign-hotelspecials": { cid: 4621, sid: 34, requiresLongForm: false },
-  "campaign-raadselgids": { cid: 3697, sid: 34, requiresLongForm: true },
-  "campaign-tuinmanieren": { cid: 4852, sid: 34, requiresLongForm: false },
-  "campaign-leadsnl": { cid: 925, sid: 34, requiresLongForm: false }
-};
-window.campaigns = campaigns;
+window.sponsorCampaigns = sponsorCampaigns;
 
 // Sponsoroptin registratie (optioneel)
 const sponsorOptinText = `spaaractief_ja directdeals_ja qliqs_ja outspot_ja onlineacties_ja aownu_ja betervrouw_ja ipay_ja cashbackkorting_ja cashhier_ja myclics_ja seniorenvoordeelpas_ja favorieteacties_ja spaaronline_ja cashbackacties_ja woolsocks_ja dealdonkey_ja centmail_ja`;
@@ -56,16 +34,24 @@ export function buildPayload(campaign) {
     straat: localStorage.getItem('straat') || '',
     huisnummer: localStorage.getItem('huisnummer') || '',
     woonplaats: localStorage.getItem('woonplaats') || '',
-    telefoon: localStorage.getItem('telefoon') || ''
+    telefoon: localStorage.getItem('telefoon') || '',
+
+    // Nieuw: campaignId meesturen zodat backend altijd weet welke campagne
+    campaignId: Object.keys(sponsorCampaigns).find(key => sponsorCampaigns[key].cid === campaign.cid)
   };
 
-  // Alleen bij LeadsNL: voeg optin string toe als aanwezig
-if (campaign.cid === 925) {
-  const optin = localStorage.getItem('sponsor_optin');
-  if (optin) {
-    payload.f_2047_EM_CO_sponsors = optin;
+  // Nieuw: coreg_answer automatisch toevoegen indien relevant
+  if (campaign.coregAnswerKey) {
+    payload.coreg_answer = localStorage.getItem(campaign.coregAnswerKey) || '';
   }
-}
+
+  // Alleen bij LeadsNL: voeg optin string toe als aanwezig
+  if (campaign.cid === 925) {
+    const optin = localStorage.getItem('sponsor_optin');
+    if (optin) {
+      payload.f_2047_EM_CO_sponsors = optin;
+    }
+  }
 
   return payload;
 }
