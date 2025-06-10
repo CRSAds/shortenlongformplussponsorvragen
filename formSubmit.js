@@ -45,6 +45,9 @@ export function buildPayload(campaign) {
     payload.f_2014_coreg_answer = localStorage.getItem(campaign.coregAnswerKey) || '';
   }
 
+  // Nieuw: f_1453_campagne_url → volledige page URL (zonder query params)
+  payload.f_1453_campagne_url = window.location.origin + window.location.pathname;
+
   // Alleen bij LeadsNL: voeg optin string toe als aanwezig
   if (campaign.cid === 925) {
     const optin = localStorage.getItem('sponsor_optin');
