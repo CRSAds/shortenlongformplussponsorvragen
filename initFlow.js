@@ -67,11 +67,6 @@ export default function initFlow() {
         step.style.display = 'none';
         const next = steps[index + 1];
 
-        if (next?.classList.contains('coreg-section') && !btn.classList.contains('sponsor-next')) {
-          console.log(`Volgende stap is coreg-section, maar button had geen sponsor-next → stop`);
-          return;
-        }
-
         if (next) {
           next.style.display = 'block';
           reloadImages(next);
