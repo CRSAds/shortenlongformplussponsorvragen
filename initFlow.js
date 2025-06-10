@@ -62,7 +62,9 @@ export default function initFlow() {
           localStorage.setItem('t_id', t_id);
 
          if (isShortForm) {
-          const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"]);
+          // Als dit "Nee" bij voorwaarden is → GEEN sponsors meesturen
+          const includeSponsors = !(step.id === 'voorwaarden-section' && !btn.id);
+          const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"], { includeSponsors });
           fetchLead(payload);
           }
         }
