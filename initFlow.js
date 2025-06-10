@@ -20,11 +20,12 @@ steps.forEach((step, index) => {
   // ✅ AANGEPASTE flow-next handler:
   step.querySelectorAll('.flow-next').forEach(btn => {
     btn.addEventListener('click', () => {
-      // Als je in een coreg-section zit én de knop heeft géén sponsor-next → STOP → laat bestaande flow-next niets doen
-      if (step.classList.contains('coreg-section') && !btn.classList.contains('sponsor-next')) {
-        console.log(`Flow-next clicked in coreg-section without sponsor-next → stopping flow`);
-        return;
-      }
+      // Als dit een coreg-button (id="campaign-...") is zonder sponsor-next → STOP flow
+      const isCoregBtn = btn.id?.startsWith('campaign-') && !btn.classList.contains('sponsor-next');
+if (isCoregBtn) {
+  console.log(`Coreg-button zonder sponsor-next geklikt → flow stopt hier`);
+  return;
+}
 
       // Normale flow handling:
       const form = step.querySelector('form');
