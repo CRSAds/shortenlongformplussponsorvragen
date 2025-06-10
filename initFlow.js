@@ -22,6 +22,16 @@ export default function initFlow() {
       btn.addEventListener('click', () => {
         const skipNext = btn.classList.contains('skip-next-section');
 
+        // ✅ Haal campaign op → nodig voor coregAnswer logging bij sponsor-next
+        const campaignId = step.id?.startsWith('campaign-') ? step.id : null;
+        const campaign = sponsorCampaigns[campaignId];
+
+        // ✅ Als sponsor-next → log coregAnswer alvast:
+        if (campaign && campaign.coregAnswerKey && btn.classList.contains('sponsor-next')) {
+          localStorage.setItem(campaign.coregAnswerKey, btn.innerText.trim());
+          console.log(`Flow-next sponsor-next: set ${campaign.coregAnswerKey} → ${btn.innerText.trim()}`);
+        }
+
         const form = step.querySelector('form');
         const isShortForm = form?.id === 'lead-form';
 
@@ -72,6 +82,12 @@ export default function initFlow() {
         const campaignId = button.id;
         const campaign = sponsorCampaigns[campaignId];
         if (!campaign) return;
+
+        // ✅ Hier coregAnswer ALTIJD loggen:
+        if (campaign.coregAnswerKey) {
+          localStorage.setItem(campaign.coregAnswerKey, button.innerText.trim());
+          console.log(`Sponsor-optin: set ${campaign.coregAnswerKey} → ${button.innerText.trim()}`);
+        }
 
         if (campaign.requiresLongForm) {
           longFormCampaigns.push(campaign);
