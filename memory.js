@@ -26,7 +26,7 @@ const iconSets = {
     'mouth.png', 'mouth.png'
   ],
     pretpark: [
-    'rollorcoaster.png', 'rollercoaster.png',
+    'rollercoaster.png', 'rollercoaster.png',
     'amusement-park.png', 'amusement-park.png',
     'tent.png', 'tent.png',
     'bumper-car.png', 'bumper-car.png',
