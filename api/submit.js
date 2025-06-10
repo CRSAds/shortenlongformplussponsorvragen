@@ -25,7 +25,8 @@ export default async function handler(req, res) {
       huisnummer,
       woonplaats,
       telefoon,
-      t_id
+      t_id,
+      f_2014_coreg_answer
     } = req.body;
 
     console.log('Ontvangen data van frontend:', req.body);
@@ -57,6 +58,7 @@ const params = new URLSearchParams({
   f_17_ipaddress: ipaddress,
   f_55_optindate: optindate,
   f_1322_transaction_id: t_id || '',
+  f_2014_coreg_answer: f_2014_coreg_answer || '',
   f_1453_campagne_url: campagne_url,
   f_2047_EM_CO_sponsors: req.body.f_2047_EM_CO_sponsors || ''
 });
