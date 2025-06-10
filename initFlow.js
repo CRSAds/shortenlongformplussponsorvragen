@@ -124,14 +124,20 @@ function initGenericCoregSponsorFlow(sponsorId, coregAnswerKey) {
 
   const allSections = document.querySelectorAll(`[id^="campaign-${sponsorId}"]`);
   allSections.forEach(section => {
-    // LET OP → alleen flow-next buttons pakken → geen sponsor-optin hier!
     const buttons = section.querySelectorAll('.flow-next');
     buttons.forEach(button => {
       button.addEventListener('click', () => {
         const answerText = button.innerText.trim();
         coregAnswers[sponsorId].push(answerText);
 
-        // Check of er een next-step class aanwezig is
+        // Als de button GEEN sponsor-next heeft → gewoon default flow-next (geen extra handling)
+        if (!button.classList.contains('sponsor-next')) {
+          console.log(`[${sponsorId}] Flow-next zonder sponsor-next → standaard flow-next`);
+          return; // Exit → laat je bestaande .flow-next handler gewoon zijn werk doen
+        }
+
+        // Als de button WEL sponsor-next heeft → dan multi-step flow handling uitvoeren
+        console.log(`[${sponsorId}] Sponsor-next detected → processing next step`);
         let nextStepId = '';
 
         button.classList.forEach(cls => {
