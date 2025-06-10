@@ -5,6 +5,55 @@ import sponsorCampaigns from './sponsorCampaigns.js';
 const longFormCampaigns = [];
 window.longFormCampaigns = longFormCampaigns;
 
+// ✅ VALIDATE FORM FUNCTIE
+function validateForm(form) {
+  let valid = true;
+  let messages = [];
+
+  // SHORT FORM → lead-form
+  if (form.id === 'lead-form') {
+    const gender = form.querySelector('input[name="gender"]:checked');
+    const firstname = form.querySelector('#firstname')?.value.trim();
+    const lastname = form.querySelector('#lastname')?.value.trim();
+    const dob_day = form.querySelector('#dob-day')?.value.trim();
+    const dob_month = form.querySelector('#dob-month')?.value.trim();
+    const dob_year = form.querySelector('#dob-year')?.value.trim();
+    const email = form.querySelector('#email')?.value.trim();
+
+    if (!gender) { valid = false; messages.push('Geslacht invullen'); }
+    if (!firstname) { valid = false; messages.push('Voornaam invullen'); }
+    if (!lastname) { valid = false; messages.push('Achternaam invullen'); }
+    if (!dob_day || !dob_month || !dob_year) { valid = false; messages.push('Geboortedatum invullen'); }
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      valid = false; messages.push('Geldig e-mailadres invullen');
+    }
+  }
+
+  // LONG FORM → long-form
+  if (form.id === 'long-form') {
+    const postcode = form.querySelector('#postcode')?.value.trim();
+    const straat = form.querySelector('#straat')?.value.trim();
+    const huisnummer = form.querySelector('#huisnummer')?.value.trim();
+    const woonplaats = form.querySelector('#woonplaats')?.value.trim();
+    const telefoon = form.querySelector('#telefoon')?.value.trim();
+
+    if (!postcode) { valid = false; messages.push('Postcode invullen'); }
+    if (!straat) { valid = false; messages.push('Straat invullen'); }
+    if (!huisnummer) { valid = false; messages.push('Huisnummer invullen'); }
+    if (!woonplaats) { valid = false; messages.push('Woonplaats invullen'); }
+    if (!telefoon) { valid = false; messages.push('Telefoonnummer invullen'); }
+    else if (telefoon.length > 11) {
+      valid = false; messages.push('Telefoonnummer mag max. 11 tekens bevatten');
+    }
+  }
+
+  if (!valid) {
+    alert('Vul aub alle velden correct in:\n' + messages.join('\n'));
+  }
+
+  return valid;
+}
+
 export default function initFlow() {
   const longFormSection = document.getElementById('long-form-section');
   const steps = Array.from(document.querySelectorAll('.flow-section, .coreg-section'));
@@ -41,6 +90,11 @@ export default function initFlow() {
         const form = step.querySelector('form');
         const isShortForm = form?.id === 'lead-form';
 
+        // ✅ FORM VALIDATIE → STOP als niet geldig
+        if (form && !validateForm(form)) {
+          return;
+        }
+
         if (form) {
           const gender = form.querySelector('input[name="gender"]:checked')?.value || '';
           const firstname = form.querySelector('#firstname')?.value.trim() || '';
@@ -61,11 +115,11 @@ export default function initFlow() {
           localStorage.setItem('email', email);
           localStorage.setItem('t_id', t_id);
 
-         if (isShortForm) {
-          // Als dit "Nee" bij voorwaarden is → GEEN sponsors meesturen
-          const includeSponsors = !(step.id === 'voorwaarden-section' && !btn.id);
-          const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"], { includeSponsors });
-          fetchLead(payload);
+          if (isShortForm) {
+            // Als dit "Nee" bij voorwaarden is → GEEN sponsors meesturen
+            const includeSponsors = !(step.id === 'voorwaarden-section' && !btn.id);
+            const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"], { includeSponsors });
+            fetchLead(payload);
           }
         }
 
