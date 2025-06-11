@@ -23,7 +23,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function registerVisit() {
     const stored = localStorage.getItem("internalVisitId");
-    if (stored) return stored;
+    if (stored) {
+      console.log("Using cached internalVisitId:", stored);
+      return stored;
+    }
 
     try {
       const res = await fetch("https://cdn.909support.com/NL/4.1/assets/php/register_visit.php", {
@@ -40,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const data = await res.json();
       if (data.internalVisitId) {
         localStorage.setItem("internalVisitId", data.internalVisitId);
+        console.log("Registered new internalVisitId:", data.internalVisitId);
         return data.internalVisitId;
       }
     } catch (err) {
@@ -77,6 +81,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       const internalVisitId = await visitPromise;
+      console.log("internalVisitId", internalVisitId, "transaction_id", transaction_id);
+
+      if (!internalVisitId) {
+        console.error("No internalVisitId yet → skipping PIN request.");
+        return;
+      }
+
       const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -85,9 +96,14 @@ document.addEventListener("DOMContentLoaded", function () {
           internalVisitId
         })
       });
+
       const data = await res.json();
+      console.log("PIN request response:", data);
+
       if (data.pincode) {
         animatePinRevealSpinner(data.pincode, "pin-code-spinner");
+      } else {
+        console.error("PIN not returned:", data);
       }
     } catch (err) {
       console.error("PIN retrieval failed:", err);
