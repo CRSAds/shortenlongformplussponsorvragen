@@ -21,24 +21,12 @@ document.addEventListener("DOMContentLoaded", function () {
   localStorage.setItem("offer_id", offerId);
   localStorage.setItem("sub_id", subId);
 
-  const isMobile = window.innerWidth < 768;
-  document.getElementById("ivr-mobile").style.display = isMobile ? "block" : "none";
-  document.getElementById("ivr-desktop").style.display = isMobile ? "none" : "block";
-
-  // 🌟 automatische switch stage / prod:
-  const requestBaseUrl = window.location.hostname.includes('stage') || window.location.hostname.includes('vercel.app')
-    ? 'https://cdn.909support.com/NL/4.1/stage/assets/php'
-    : 'https://cdn.909support.com/NL/4.1/assets/php';
-
   async function registerVisit() {
     const stored = localStorage.getItem("internalVisitId");
-    if (stored) {
-      console.log("Visit → using cached internalVisitId", stored);
-      return stored;
-    }
+    if (stored) return stored;
 
     try {
-      const res = await fetch(`${requestBaseUrl}/register_visit.php`, {
+      const res = await fetch("https://cdn.909support.com/NL/4.1/assets/php/register_visit.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -50,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
         })
       });
       const data = await res.json();
-      console.log("registerVisit response", data);
       if (data.internalVisitId) {
         localStorage.setItem("internalVisitId", data.internalVisitId);
         return data.internalVisitId;
@@ -85,14 +72,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  async function showPinForTarget(pinContainerId, spinnerId) {
-    document.getElementById(pinContainerId).style.display = "block";
+  async function showPin() {
+    document.getElementById("pin-container").style.display = "block";
 
     try {
       const internalVisitId = await visitPromise;
-      console.log("PIN request → internalVisitId", internalVisitId, "transaction_id", transaction_id);
-
-      const res = await fetch(`${requestBaseUrl}/request_pin.php`, {
+      const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -101,11 +86,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
       });
       const data = await res.json();
-      console.log("request_pin response", data);
       if (data.pincode) {
-        animatePinRevealSpinner(data.pincode, spinnerId);
-      } else {
-        console.warn("No pincode returned!");
+        animatePinRevealSpinner(data.pincode, "pin-code-spinner");
       }
     } catch (err) {
       console.error("PIN retrieval failed:", err);
@@ -113,10 +95,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function waitForIVRAndInit() {
-    const targetElement = isMobile ? document.getElementById("ivr-mobile") : document.getElementById("ivr-desktop");
+    const targetElement = document.getElementById("ivr-section");
 
     if (!targetElement) {
-      console.log("IVR element not yet found → retrying...");
+      console.log("IVR section not yet found → retrying...");
       setTimeout(waitForIVRAndInit, 200);
       return;
     }
@@ -130,31 +112,23 @@ document.addEventListener("DOMContentLoaded", function () {
       if (isVisible && !ivrShown) {
         ivrShown = true;
         console.log("IVR section became visible → showing PIN...");
-        if (isMobile) {
-          showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
-        } else {
-          showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
-        }
+        showPin();
       }
     });
 
     observer.observe(targetElement, { attributes: true, attributeFilter: ["style"] });
 
-    // Fallback
+    // Fallback → in case Swipe Pages animates too slowly
     setTimeout(() => {
       const style = window.getComputedStyle(targetElement);
       const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
 
       if (isVisible && !ivrShown) {
         ivrShown = true;
-        console.log("IVR fallback → showing PIN...");
-        if (isMobile) {
-          showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
-        } else {
-          showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
-        }
+        console.log("IVR section fallback → showing PIN...");
+        showPin();
       }
-    }, 1500); // iets ruimer
+    }, 1000); // 1s fallback
   }
 
   // Start after DOM ready:
