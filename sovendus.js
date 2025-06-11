@@ -1,56 +1,81 @@
-// sovendus.js
+function Sovendus() {
+  console.log("Sovendus() gestart → pushing tracking info");
 
-(function () {
-  const containerId = 'sovendus-container-1';
-  const trafficSourceNumber = 5592;
-  const trafficMediumNumber = 1;
+  var d = new Date();
+  var month = d.getMonth()+1;
+  var day = d.getDate();
+  var hour = d.getHours();
+  var minutes = d.getMinutes();
+  var seconds = d.getSeconds();
 
-  // Data ophalen uit localStorage of genereren
-  const t_id = localStorage.getItem('t_id') || crypto.randomUUID();
-  const timestamp = Date.now().toString();
-  const email = localStorage.getItem('email') || 'onbekend@example.com';
-  const firstname = localStorage.getItem('firstname') || '';
-  const lastname = localStorage.getItem('lastname') || '';
-  const gender = localStorage.getItem('gender') || ''; // Man / Vrouw
+  var timestampSovendus = d.getFullYear() + 
+    (month<10 ? '0' : '') + month + 
+    (day<10 ? '0' : '') + day + 
+    (hour<10 ? '0' : '') + hour + 
+    minutes + seconds;
 
-  const salutation = gender.toLowerCase() === 'man' ? 'Dhr.' : 'Mevr.';
-
-  // Voeg de div toe aan de sectie als die nog niet bestaat
-  const container = document.getElementById(containerId);
-  if (!container) {
-    const newDiv = document.createElement('div');
-    newDiv.id = containerId;
-    const target = document.getElementById('sovendus-section') || document.body;
-    target.appendChild(newDiv);
-  }
-
-  // Configureer Sovendus scriptvariabelen
   window.sovIframes = window.sovIframes || [];
   window.sovIframes.push({
-    trafficSourceNumber,
-    trafficMediumNumber,
-    sessionId: t_id,
-    timestamp,
-    orderId: t_id,
-    orderValue: '0.00',
-    orderCurrency: 'EUR',
-    usedCouponCode: '',
-    iframeContainerId: containerId
+    trafficSourceNumber : '5592',
+    trafficMediumNumber : '1',
+    sessionId : localStorage.getItem('t_id'),
+    timestamp : timestampSovendus,
+    orderId : '',
+    orderValue : '',
+    orderCurrency : '',
+    usedCouponCode : '',
+    iframeContainerId : 'sovendus-container-1'
   });
 
-  window.sovConsumer = window.sovConsumer || {};
   window.sovConsumer = {
-    consumerSalutation: salutation,
-    consumerFirstName: firstname,
-    consumerLastName: lastname,
-    consumerEmail: email
+    consumerSalutation : localStorage.getItem('f_2_title'),
+    consumerFirstName : localStorage.getItem('f_3_firstname'),
+    consumerLastName : localStorage.getItem('f_4_lastname'),
+    consumerEmail : localStorage.getItem('f_1_email')
   };
 
-  // Laad het Sovendus-script
-  const protocol = window.location.protocol;
-  const src = `${protocol}//api.sovendus.com/sovabo/common/js/flexibleiframe.js`;
-  const script = document.createElement('script');
-  script.src = src;
-  script.async = true;
-  document.body.appendChild(script);
-})();
+  console.log("Sovendus tracking info set.");
+}
+
+function setupSovendusClick() {
+  const clickBtn = document.getElementById("sovendus-click");
+  if (!clickBtn) {
+    console.warn("Sovendus click button niet gevonden!");
+    return;
+  }
+
+  clickBtn.addEventListener("click", function() {
+    console.log("Sovendus button clicked → opening Sovendus link");
+
+    // Open Sovendus URL in nieuw tabblad
+    window.open(
+      'https://www.sovendus-connect.com/start?trafficSourceNumber=5592&sessionId=' + 
+      encodeURIComponent(localStorage.getItem('t_id')),
+      '_blank'
+    );
+
+    // Flow-next gaat daarna gewoon verder → je hoeft hier niets extra’s te doen
+  });
+}
+
+function waitForSovendusSectionAndInit() {
+  let sovendusShown = false;
+  const checkInterval = setInterval(() => {
+    const sovendusSection = document.getElementById("sovendus");
+    if (!sovendusSection) return;
+
+    const style = window.getComputedStyle(sovendusSection);
+    const isVisible = style && style.display !== "none" && style.opacity !== "0" && sovendusSection.offsetHeight > 0;
+
+    if (isVisible && !sovendusShown) {
+      sovendusShown = true;
+      clearInterval(checkInterval);
+      console.log("Sovendus section visible → calling Sovendus()");
+      Sovendus();
+      setupSovendusClick();
+    }
+  }, 200);
+}
+
+// Start automatisch als DOM ready is
+document.addEventListener("DOMContentLoaded", waitForSovendusSectionAndInit);
