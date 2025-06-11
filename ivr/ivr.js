@@ -58,6 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById(targetId);
     if (!container) return;
 
+    // Safety → force parent visible
+    container.parentElement.style.display = "block";
+
     const digits = container.querySelectorAll('.digit-inner');
     const pinStr = pin.toString().padStart(3, '0');
 
@@ -91,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       const data = await res.json();
       if (data.pincode) {
+        console.log("✅ PIN ontvangen:", data.pincode);
         animatePinRevealSpinner(data.pincode, spinnerId);
       }
     } catch (err) {
