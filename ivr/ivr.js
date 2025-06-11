@@ -98,10 +98,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Automatische detectie
+  // ✅ FLAG → zodat PIN maar 1x automatisch getoond wordt
+  let ivrShown = false;
+
+  // ✅ Automatische detectie → werkt voor normale flow → 1x triggeren
   const observer = new MutationObserver(() => {
     const ivrSection = document.getElementById("ivr-section");
-    if (ivrSection && ivrSection.offsetParent !== null) {
+    if (ivrSection && ivrSection.offsetParent !== null && !ivrShown) {
+      ivrShown = true; // Markeer → geen herhaald ophalen
       if (isMobile) {
         showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
       } else {
@@ -112,6 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   observer.observe(document.body, { attributes: true, childList: true, subtree: true });
 
-  // Export zodat je het vanuit popup kunt triggeren
+  // ✅ Export → zodat je in popup zelf kunt triggeren
   window.showPinForTarget = showPinForTarget;
 });
