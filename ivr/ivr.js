@@ -94,34 +94,44 @@ document.addEventListener("DOMContentLoaded", function () {
         animatePinRevealSpinner(data.pincode, spinnerId);
       }
     } catch (err) {
-      console.error("PIN-fout:", err);
+      console.error("PIN retrieval failed:", err);
     }
   }
 
-  // ✅ FLAG → zodat PIN maar 1x automatisch getoond wordt
+  // Automatisch tonen zodra #ivr-section zichtbaar wordt
+  const ivrSection = document.getElementById("ivr-section");
   let ivrShown = false;
 
-  // ✅ Automatische detectie → werkt voor normale flow → 1x triggeren
-  const ivrSection = document.getElementById("ivr-section");
+  const observer = new MutationObserver(() => {
+    const style = window.getComputedStyle(ivrSection);
+    const isVisible = style && style.display !== "none" && style.opacity !== "0" && ivrSection.offsetHeight > 0;
 
-  if (ivrSection) {
-    const observer = new MutationObserver(() => {
-      const isVisible = ivrSection.offsetParent !== null;
-
-      if (isVisible && !ivrShown) {
-        ivrShown = true; // 1x triggeren
-        console.log("IVR section became visible → showing PIN...");
-        if (isMobile) {
-          showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
-        } else {
-          showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
-        }
+    if (isVisible && !ivrShown) {
+      ivrShown = true;
+      console.log("IVR section became visible → showing PIN...");
+      if (isMobile) {
+        showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
+      } else {
+        showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
       }
-    });
+    }
+  });
 
-    observer.observe(ivrSection, { attributes: true, attributeFilter: ['style'] });
-  }
+  observer.observe(ivrSection, { attributes: true, attributeFilter: ["style"] });
 
-  // ✅ Export → zodat je in popup zelf kunt triggeren
-  window.showPinForTarget = showPinForTarget;
+  // Fallback → in case Swipe Pages animates too slowly
+  setTimeout(() => {
+    const style = window.getComputedStyle(ivrSection);
+    const isVisible = style && style.display !== "none" && style.opacity !== "0" && ivrSection.offsetHeight > 0;
+
+    if (isVisible && !ivrShown) {
+      ivrShown = true;
+      console.log("IVR section fallback → showing PIN...");
+      if (isMobile) {
+        showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
+      } else {
+        showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
+      }
+    }
+  }, 500); // 500ms delay for transitions
 });
