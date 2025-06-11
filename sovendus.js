@@ -2,36 +2,37 @@ function Sovendus() {
   console.log("Sovendus() gestart → pushing tracking info");
 
   var d = new Date();
-  var month = d.getMonth()+1;
+  var month = d.getMonth() + 1;
   var day = d.getDate();
   var hour = d.getHours();
   var minutes = d.getMinutes();
   var seconds = d.getSeconds();
 
-  var timestampSovendus = d.getFullYear() + 
-    (month<10 ? '0' : '') + month + 
-    (day<10 ? '0' : '') + day + 
-    (hour<10 ? '0' : '') + hour + 
-    minutes + seconds;
+  var timestampSovendus = d.getFullYear() +
+    (month < 10 ? '0' : '') + month +
+    (day < 10 ? '0' : '') + day +
+    (hour < 10 ? '0' : '') + hour +
+    (minutes < 10 ? '0' : '') + minutes +
+    (seconds < 10 ? '0' : '') + seconds;
 
   window.sovIframes = window.sovIframes || [];
   window.sovIframes.push({
-    trafficSourceNumber : '5592',
-    trafficMediumNumber : '1',
-    sessionId : localStorage.getItem('t_id'),
-    timestamp : timestampSovendus,
-    orderId : '',
-    orderValue : '',
-    orderCurrency : '',
-    usedCouponCode : '',
-    iframeContainerId : 'sovendus-container-1'
+    trafficSourceNumber: '5592',
+    trafficMediumNumber: '1',
+    sessionId: localStorage.getItem('t_id'),
+    timestamp: timestampSovendus,
+    orderId: '',
+    orderValue: '',
+    orderCurrency: '',
+    usedCouponCode: '',
+    iframeContainerId: 'sovendus-container-1'
   });
 
   window.sovConsumer = {
-    consumerSalutation : localStorage.getItem('f_2_title'),
-    consumerFirstName : localStorage.getItem('f_3_firstname'),
-    consumerLastName : localStorage.getItem('f_4_lastname'),
-    consumerEmail : localStorage.getItem('f_1_email')
+    consumerSalutation: localStorage.getItem('f_2_title'),
+    consumerFirstName: localStorage.getItem('f_3_firstname'),
+    consumerLastName: localStorage.getItem('f_4_lastname'),
+    consumerEmail: localStorage.getItem('f_1_email')
   };
 
   console.log("Sovendus tracking info set.");
@@ -44,17 +45,17 @@ function setupSovendusClick() {
     return;
   }
 
-  clickBtn.addEventListener("click", function() {
+  clickBtn.addEventListener("click", function () {
     console.log("Sovendus button clicked → opening Sovendus link");
 
-    // Open Sovendus URL in nieuw tabblad
+    // Open Sovendus URL in nieuw tabblad → *jouw link-out url naar Sovendus*:
     window.open(
-      'https://www.sovendus-connect.com/start?trafficSourceNumber=5592&sessionId=' + 
+      'https://www.sovendus-connect.com/start?trafficSourceNumber=5592&sessionId=' +
       encodeURIComponent(localStorage.getItem('t_id')),
       '_blank'
     );
 
-    // Flow-next gaat daarna gewoon verder → je hoeft hier niets extra’s te doen
+    // Flow-next gebeurt automatisch → button heeft flow-next
   });
 }
 
@@ -77,5 +78,5 @@ function waitForSovendusSectionAndInit() {
   }, 200);
 }
 
-// Start automatisch als DOM ready is
+// Start na DOM ready:
 document.addEventListener("DOMContentLoaded", waitForSovendusSectionAndInit);
