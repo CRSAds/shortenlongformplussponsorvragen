@@ -98,40 +98,51 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Automatisch tonen zodra juiste subcontainer zichtbaar wordt:
-  const targetElement = isMobile ? document.getElementById("ivr-mobile") : document.getElementById("ivr-desktop");
-  let ivrShown = false;
+  function waitForIVRAndInit() {
+    const targetElement = isMobile ? document.getElementById("ivr-mobile") : document.getElementById("ivr-desktop");
 
-  const observer = new MutationObserver(() => {
-    const style = window.getComputedStyle(targetElement);
-    const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
-
-    if (isVisible && !ivrShown) {
-      ivrShown = true;
-      console.log("IVR section became visible → showing PIN...");
-      if (isMobile) {
-        showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
-      } else {
-        showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
-      }
+    if (!targetElement) {
+      console.log("IVR element not yet found → retrying...");
+      setTimeout(waitForIVRAndInit, 200); // Retry every 200ms until found
+      return;
     }
-  });
 
-  observer.observe(targetElement, { attributes: true, attributeFilter: ["style"] });
+    let ivrShown = false;
 
-  // Fallback → in case Swipe Pages animates too slowly
-  setTimeout(() => {
-    const style = window.getComputedStyle(targetElement);
-    const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
+    const observer = new MutationObserver(() => {
+      const style = window.getComputedStyle(targetElement);
+      const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
 
-    if (isVisible && !ivrShown) {
-      ivrShown = true;
-      console.log("IVR section fallback → showing PIN...");
-      if (isMobile) {
-        showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
-      } else {
-        showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
+      if (isVisible && !ivrShown) {
+        ivrShown = true;
+        console.log("IVR section became visible → showing PIN...");
+        if (isMobile) {
+          showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
+        } else {
+          showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
+        }
       }
-    }
-  }, 500); // 500ms delay for transitions
+    });
+
+    observer.observe(targetElement, { attributes: true, attributeFilter: ["style"] });
+
+    // Fallback → in case Swipe Pages animates too slowly
+    setTimeout(() => {
+      const style = window.getComputedStyle(targetElement);
+      const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
+
+      if (isVisible && !ivrShown) {
+        ivrShown = true;
+        console.log("IVR section fallback → showing PIN...");
+        if (isMobile) {
+          showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
+        } else {
+          showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
+        }
+      }
+    }, 1000); // 1s fallback
+  }
+
+  // Start after DOM ready:
+  waitForIVRAndInit();
 });
