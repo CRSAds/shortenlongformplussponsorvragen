@@ -98,13 +98,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Automatisch tonen zodra #ivr-section zichtbaar wordt
-  const ivrSection = document.getElementById("ivr-section");
+  // Automatisch tonen zodra juiste subcontainer zichtbaar wordt:
+  const targetElement = isMobile ? document.getElementById("ivr-mobile") : document.getElementById("ivr-desktop");
   let ivrShown = false;
 
   const observer = new MutationObserver(() => {
-    const style = window.getComputedStyle(ivrSection);
-    const isVisible = style && style.display !== "none" && style.opacity !== "0" && ivrSection.offsetHeight > 0;
+    const style = window.getComputedStyle(targetElement);
+    const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
 
     if (isVisible && !ivrShown) {
       ivrShown = true;
@@ -117,12 +117,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  observer.observe(ivrSection, { attributes: true, attributeFilter: ["style"] });
+  observer.observe(targetElement, { attributes: true, attributeFilter: ["style"] });
 
   // Fallback → in case Swipe Pages animates too slowly
   setTimeout(() => {
-    const style = window.getComputedStyle(ivrSection);
-    const isVisible = style && style.display !== "none" && style.opacity !== "0" && ivrSection.offsetHeight > 0;
+    const style = window.getComputedStyle(targetElement);
+    const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
 
     if (isVisible && !ivrShown) {
       ivrShown = true;
