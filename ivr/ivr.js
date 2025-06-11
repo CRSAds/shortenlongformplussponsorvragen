@@ -129,25 +129,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ✅ Toevoegen → automatisch button click simuleren:
-  function waitForIVRAndAutoClick() {
-    const targetElement = document.getElementById("ivr-section");
-
-    if (!targetElement) {
-      console.log("IVR section not yet found → retrying...");
-      setTimeout(waitForIVRAndAutoClick, 200);
-      return;
-    }
-
+  // ✅ Auto-click with reliable interval → works 100% in Swipe Pages
+  function waitForIVRSectionAndClick() {
     let ivrShown = false;
+    const checkInterval = setInterval(() => {
+      const ivrSection = document.getElementById("ivr-section");
+      if (!ivrSection) return; // nog niet aanwezig in DOM
 
-    const observer = new MutationObserver(() => {
-      const style = window.getComputedStyle(targetElement);
-      const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
+      const style = window.getComputedStyle(ivrSection);
+      const isVisible = style && style.display !== "none" && style.opacity !== "0" && ivrSection.offsetHeight > 0;
 
       if (isVisible && !ivrShown) {
         ivrShown = true;
-        console.log("IVR section became visible → simulating button click...");
+        clearInterval(checkInterval); // stop interval → maar 1x doen!
+        console.log("IVR section visible → simulating button click...");
 
         if (isMobile) {
           const mobileBtn = document.getElementById("show-pin-btn-mobile");
@@ -157,30 +152,9 @@ document.addEventListener("DOMContentLoaded", function () {
           if (desktopBtn) desktopBtn.click();
         }
       }
-    });
-
-    observer.observe(targetElement, { attributes: true, attributeFilter: ["style"] });
-
-    // Fallback → in case Swipe Pages animates too slowly
-    setTimeout(() => {
-      const style = window.getComputedStyle(targetElement);
-      const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
-
-      if (isVisible && !ivrShown) {
-        ivrShown = true;
-        console.log("IVR section fallback → simulating button click...");
-
-        if (isMobile) {
-          const mobileBtn = document.getElementById("show-pin-btn-mobile");
-          if (mobileBtn) mobileBtn.click();
-        } else {
-          const desktopBtn = document.getElementById("show-pin-btn-desktop");
-          if (desktopBtn) desktopBtn.click();
-        }
-      }
-    }, 1000);
+    }, 200); // check elke 200ms
   }
 
   // Start auto-click logic:
-  waitForIVRAndAutoClick();
+  waitForIVRSectionAndClick();
 });
