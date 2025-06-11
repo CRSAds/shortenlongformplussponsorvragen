@@ -25,12 +25,20 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("ivr-mobile").style.display = isMobile ? "block" : "none";
   document.getElementById("ivr-desktop").style.display = isMobile ? "none" : "block";
 
+  // 🌟 automatische switch stage / prod:
+  const requestBaseUrl = window.location.hostname.includes('stage') || window.location.hostname.includes('vercel.app')
+    ? 'https://cdn.909support.com/NL/4.1/stage/assets/php'
+    : 'https://cdn.909support.com/NL/4.1/assets/php';
+
   async function registerVisit() {
     const stored = localStorage.getItem("internalVisitId");
-    if (stored) return stored;
+    if (stored) {
+      console.log("Visit → using cached internalVisitId", stored);
+      return stored;
+    }
 
     try {
-      const res = await fetch("https://cdn.909support.com/NL/4.1/assets/php/register_visit.php", {
+      const res = await fetch(`${requestBaseUrl}/register_visit.php`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -42,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
       });
       const data = await res.json();
+      console.log("registerVisit response", data);
       if (data.internalVisitId) {
         localStorage.setItem("internalVisitId", data.internalVisitId);
         return data.internalVisitId;
@@ -57,9 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function animatePinRevealSpinner(pin, targetId) {
     const container = document.getElementById(targetId);
     if (!container) return;
-
-    // Safety → force parent visible
-    container.parentElement.style.display = "block";
 
     const digits = container.querySelectorAll('.digit-inner');
     const pinStr = pin.toString().padStart(3, '0');
@@ -84,7 +90,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       const internalVisitId = await visitPromise;
-      const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
+      console.log("PIN request → internalVisitId", internalVisitId, "transaction_id", transaction_id);
+
+      const res = await fetch(`${requestBaseUrl}/request_pin.php`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -93,9 +101,11 @@ document.addEventListener("DOMContentLoaded", function () {
         })
       });
       const data = await res.json();
+      console.log("request_pin response", data);
       if (data.pincode) {
-        console.log("✅ PIN ontvangen:", data.pincode);
         animatePinRevealSpinner(data.pincode, spinnerId);
+      } else {
+        console.warn("No pincode returned!");
       }
     } catch (err) {
       console.error("PIN retrieval failed:", err);
@@ -107,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!targetElement) {
       console.log("IVR element not yet found → retrying...");
-      setTimeout(waitForIVRAndInit, 200); // Retry every 200ms until found
+      setTimeout(waitForIVRAndInit, 200);
       return;
     }
 
@@ -130,21 +140,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     observer.observe(targetElement, { attributes: true, attributeFilter: ["style"] });
 
-    // Fallback → in case Swipe Pages animates too slowly
+    // Fallback
     setTimeout(() => {
       const style = window.getComputedStyle(targetElement);
       const isVisible = style && style.display !== "none" && style.opacity !== "0" && targetElement.offsetHeight > 0;
 
       if (isVisible && !ivrShown) {
         ivrShown = true;
-        console.log("IVR section fallback → showing PIN...");
+        console.log("IVR fallback → showing PIN...");
         if (isMobile) {
           showPinForTarget("pin-container-mobile", "pin-code-spinner-mobile");
         } else {
           showPinForTarget("pin-container-desktop", "pin-code-spinner-desktop");
         }
       }
-    }, 1000); // 1s fallback
+    }, 1500); // iets ruimer
   }
 
   // Start after DOM ready:
