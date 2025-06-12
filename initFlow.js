@@ -1,4 +1,4 @@
-import { countryConfig } from './countryConfig.js';
+// initFlow.js
 import { reloadImages } from './imageFix.js';
 import { fetchLead, buildPayload } from './formSubmit.js';
 import sponsorCampaigns from './sponsorCampaigns.js';
@@ -6,14 +6,8 @@ import sponsorCampaigns from './sponsorCampaigns.js';
 const longFormCampaigns = [];
 window.longFormCampaigns = longFormCampaigns;
 
-const country = window.country || 'NL';
-const config = countryConfig[country];
-
 // ✅ VALIDATE FORM FUNCTIE
 function validateForm(form) {
-  const config = countryConfig[window.country || 'NL'];
-  const messagesCfg = config.validationMessages;
-
   let valid = true;
   let messages = [];
 
@@ -27,33 +21,30 @@ function validateForm(form) {
     const dob_year = form.querySelector('#dob-year')?.value.trim();
     const email = form.querySelector('#email')?.value.trim();
 
-    if (!gender) { valid = false; messages.push(messagesCfg.genderRequired); }
-    if (!firstname) { valid = false; messages.push(messagesCfg.firstnameRequired); }
-    if (!lastname) { valid = false; messages.push(messagesCfg.lastnameRequired); }
-    if (!dob_day || !dob_month || !dob_year) { valid = false; messages.push(messagesCfg.dobRequired); }
+    if (!gender) { valid = false; messages.push('Geslacht invullen'); }
+    if (!firstname) { valid = false; messages.push('Voornaam invullen'); }
+    if (!lastname) { valid = false; messages.push('Achternaam invullen'); }
+    if (!dob_day || !dob_month || !dob_year) { valid = false; messages.push('Geboortedatum invullen'); }
     if (!email || !email.includes('@') || !email.includes('.')) {
-      valid = false; messages.push(messagesCfg.emailRequired);
+      valid = false; messages.push('Geldig e-mailadres invullen');
     }
   }
 
   // LONG FORM → long-form
   if (form.id === 'long-form') {
-    // NL: straat, huisnummer, postcode, woonplaats, telefoon
-    // UK: address, postcode, city, phone
-
     const postcode = form.querySelector('#postcode')?.value.trim();
-    const straat = form.querySelector('#straat')?.value.trim() || form.querySelector('#address')?.value.trim();
-    const huisnummer = form.querySelector('#huisnummer')?.value.trim(); // alleen NL
-    const woonplaats = form.querySelector(`#${config.cityField}`)?.value.trim();
-    const telefoon = form.querySelector('#telefoon')?.value.trim() || form.querySelector('#phone')?.value.trim();
+    const straat = form.querySelector('#straat')?.value.trim();
+    const huisnummer = form.querySelector('#huisnummer')?.value.trim();
+    const woonplaats = form.querySelector('#woonplaats')?.value.trim();
+    const telefoon = form.querySelector('#telefoon')?.value.trim();
 
-    if (!postcode) { valid = false; messages.push(messagesCfg.postcodeRequired); }
-    if (config.streetField && !straat) { valid = false; messages.push(messagesCfg.streetRequired); }
-    if (config.houseNumberField && !huisnummer) { valid = false; messages.push(messagesCfg.houseNumberRequired); }
-    if (!woonplaats) { valid = false; messages.push(messagesCfg.cityRequired); }
-    if (!telefoon) { valid = false; messages.push(messagesCfg.phoneRequired); }
+    if (!postcode) { valid = false; messages.push('Postcode invullen'); }
+    if (!straat) { valid = false; messages.push('Straat invullen'); }
+    if (!huisnummer) { valid = false; messages.push('Huisnummer invullen'); }
+    if (!woonplaats) { valid = false; messages.push('Woonplaats invullen'); }
+    if (!telefoon) { valid = false; messages.push('Telefoonnummer invullen'); }
     else if (telefoon.length > 11) {
-      valid = false; messages.push(messagesCfg.phoneTooLong);
+      valid = false; messages.push('Telefoonnummer mag max. 11 tekens bevatten');
     }
   }
 
@@ -107,12 +98,12 @@ export default function initFlow() {
 
         if (form) {
           const gender = form.querySelector('input[name="gender"]:checked')?.value || '';
-          const firstname = form.querySelector(`#${config.firstnameField}`)?.value.trim() || '';
-          const lastname = form.querySelector(`#${config.lastnameField}`)?.value.trim() || '';
-          const dob_day = form.querySelector(`#${config.dobDayField}`)?.value || '';
-          const dob_month = form.querySelector(`#${config.dobMonthField}`)?.value || '';
-          const dob_year = form.querySelector(`#${config.dobYearField}`)?.value || '';
-          const email = form.querySelector(`#${config.emailField}`)?.value.trim() || '';
+          const firstname = form.querySelector('#firstname')?.value.trim() || '';
+          const lastname = form.querySelector('#lastname')?.value.trim() || '';
+          const dob_day = form.querySelector('#dob-day')?.value || '';
+          const dob_month = form.querySelector('#dob-month')?.value || '';
+          const dob_year = form.querySelector('#dob-year')?.value || '';
+          const email = form.querySelector('#email')?.value.trim() || '';
           const urlParams = new URLSearchParams(window.location.search);
           const t_id = urlParams.get('t_id') || crypto.randomUUID();
 
@@ -126,7 +117,6 @@ export default function initFlow() {
           localStorage.setItem('t_id', t_id);
 
           if (isShortForm) {
-            // Als dit "Nee" bij voorwaarden is → GEEN sponsors meesturen
             const includeSponsors = !(step.id === 'voorwaarden-section' && !btn.id);
             const payload = buildPayload(sponsorCampaigns["campaign-leadsnl"], { includeSponsors });
             fetchLead(payload);
@@ -134,18 +124,12 @@ export default function initFlow() {
         }
 
         step.style.display = 'none';
-const next = skipNext ? steps[index + 2] : steps[index + 1];
+        const next = skipNext ? steps[index + 2] : steps[index + 1];
 
-if (next) {
-  next.style.display = 'block';
-
-  // → extra: als het de Sovendus sectie is, extra logje
-  if (next.id === 'sovendus') {
-    console.log('👉 Sovendus sectie zichtbaar gemaakt!');
-  }
-
-  reloadImages(next);
-}
+        if (next) {
+          next.style.display = 'block';
+          reloadImages(next);
+        }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
