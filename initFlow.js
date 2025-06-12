@@ -11,44 +11,51 @@ const config = countryConfig[country];
 
 // ✅ VALIDATE FORM FUNCTIE
 function validateForm(form) {
+  const config = countryConfig[window.country || 'NL'];
+  const messagesCfg = config.validationMessages;
+
   let valid = true;
   let messages = [];
 
   // SHORT FORM → lead-form
-if (form.id === 'lead-form') {
-  const gender = form.querySelector('input[name="gender"]:checked');
-  const firstname = form.querySelector(`#${config.firstnameField}`)?.value.trim();
-  const lastname = form.querySelector(`#${config.lastnameField}`)?.value.trim();
-  const dob_day = form.querySelector(`#${config.dobDayField}`)?.value.trim();
-  const dob_month = form.querySelector(`#${config.dobMonthField}`)?.value.trim();
-  const dob_year = form.querySelector(`#${config.dobYearField}`)?.value.trim();
-  const email = form.querySelector(`#${config.emailField}`)?.value.trim();
+  if (form.id === 'lead-form') {
+    const gender = form.querySelector('input[name="gender"]:checked');
+    const firstname = form.querySelector('#firstname')?.value.trim();
+    const lastname = form.querySelector('#lastname')?.value.trim();
+    const dob_day = form.querySelector('#dob-day')?.value.trim();
+    const dob_month = form.querySelector('#dob-month')?.value.trim();
+    const dob_year = form.querySelector('#dob-year')?.value.trim();
+    const email = form.querySelector('#email')?.value.trim();
 
-  if (!gender) { valid = false; messages.push('Please select gender'); }
-  if (!firstname) { valid = false; messages.push('Please enter first name'); }
-  if (!lastname) { valid = false; messages.push('Please enter last name'); }
-  if (!dob_day || !dob_month || !dob_year) { valid = false; messages.push('Please enter date of birth'); }
-  if (!email || !email.includes('@') || !email.includes('.')) {
-    valid = false; messages.push('Please enter valid email address');
+    if (!gender) { valid = false; messages.push(messagesCfg.genderRequired); }
+    if (!firstname) { valid = false; messages.push(messagesCfg.firstnameRequired); }
+    if (!lastname) { valid = false; messages.push(messagesCfg.lastnameRequired); }
+    if (!dob_day || !dob_month || !dob_year) { valid = false; messages.push(messagesCfg.dobRequired); }
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      valid = false; messages.push(messagesCfg.emailRequired);
+    }
   }
-}
 
-if (form.id === 'long-form') {
-  const postcode = form.querySelector(`#${config.postcodeField}`)?.value.trim();
-  const straat = config.streetField ? form.querySelector(`#${config.streetField}`)?.value.trim() : '';
-  const huisnummer = config.houseNumberField ? form.querySelector(`#${config.houseNumberField}`)?.value.trim() : '';
-  const woonplaats = form.querySelector(`#${config.cityField}`)?.value.trim();
-  const telefoon = form.querySelector(`#${config.phoneField}`)?.value.trim();
+  // LONG FORM → long-form
+  if (form.id === 'long-form') {
+    // NL: straat, huisnummer, postcode, woonplaats, telefoon
+    // UK: address, postcode, city, phone
 
-  if (!postcode) { valid = false; messages.push('Please enter postcode'); }
-  if (config.streetField && !straat) { valid = false; messages.push('Please enter address/street'); }
-  if (config.houseNumberField && !huisnummer) { valid = false; messages.push('Please enter house number'); }
-  if (!woonplaats) { valid = false; messages.push('Please enter town/city'); }
-  if (!telefoon) { valid = false; messages.push('Please enter phone number'); }
-  else if (telefoon.length > 11) {
-    valid = false; messages.push('Phone number max 11 digits');
+    const postcode = form.querySelector('#postcode')?.value.trim();
+    const straat = form.querySelector('#straat')?.value.trim() || form.querySelector('#address')?.value.trim();
+    const huisnummer = form.querySelector('#huisnummer')?.value.trim(); // alleen NL
+    const woonplaats = form.querySelector(`#${config.cityField}`)?.value.trim();
+    const telefoon = form.querySelector('#telefoon')?.value.trim() || form.querySelector('#phone')?.value.trim();
+
+    if (!postcode) { valid = false; messages.push(messagesCfg.postcodeRequired); }
+    if (config.streetField && !straat) { valid = false; messages.push(messagesCfg.streetRequired); }
+    if (config.houseNumberField && !huisnummer) { valid = false; messages.push(messagesCfg.houseNumberRequired); }
+    if (!woonplaats) { valid = false; messages.push(messagesCfg.cityRequired); }
+    if (!telefoon) { valid = false; messages.push(messagesCfg.phoneRequired); }
+    else if (telefoon.length > 11) {
+      valid = false; messages.push(messagesCfg.phoneTooLong);
+    }
   }
-}
 
   if (!valid) {
     alert('Vul aub alle velden correct in:\n' + messages.join('\n'));
