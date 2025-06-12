@@ -1,14 +1,14 @@
 function Sovendus() {
   console.log("Sovendus() gestart → pushing tracking info");
 
-  var d = new Date();
-  var month = d.getMonth() + 1;
-  var day = d.getDate();
-  var hour = d.getHours();
-  var minutes = d.getMinutes();
-  var seconds = d.getSeconds();
+  const d = new Date();
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const hour = d.getHours();
+  const minutes = d.getMinutes();
+  const seconds = d.getSeconds();
 
-  var timestampSovendus = d.getFullYear() +
+  const timestampSovendus = d.getFullYear() +
     (month < 10 ? '0' : '') + month +
     (day < 10 ? '0' : '') + day +
     (hour < 10 ? '0' : '') + hour +
@@ -21,7 +21,7 @@ function Sovendus() {
     trafficMediumNumber: '1',
     sessionId: localStorage.getItem('t_id'),
     timestamp: timestampSovendus,
-    orderId: '',
+    orderId: window.location.origin + window.location.pathname,
     orderValue: '',
     orderCurrency: '',
     usedCouponCode: '',
@@ -35,32 +35,17 @@ function Sovendus() {
     consumerEmail: localStorage.getItem('f_1_email')
   };
 
-  console.log("Sovendus tracking info set.");
-}
+  console.log("Sovendus tracking info set → loading flexibleIframe.js");
 
-function setupSovendusClick() {
-  const clickBtn = document.getElementById("sovendus-click");
-  if (!clickBtn) {
-    console.warn("Sovendus click button niet gevonden!");
-    return;
-  }
-
-  clickBtn.addEventListener("click", function () {
-    console.log("Sovendus button clicked → opening Sovendus link");
-
-    // Open Sovendus URL in nieuw tabblad → *jouw link-out url naar Sovendus*:
-    window.open(
-      'https://www.sovendus-connect.com/start?trafficSourceNumber=5592&sessionId=' +
-      encodeURIComponent(localStorage.getItem('t_id')),
-      '_blank'
-    );
-
-    // Flow-next gebeurt automatisch → button heeft flow-next
-  });
+  // Laad flexibleIframe.js → dit laadt de iframe/button in de container:
+  const script = document.createElement('script');
+  script.src = 'https://api.sovendus.com/sovabo/common/js/flexibleIframe.js';
+  document.head.appendChild(script);
 }
 
 function waitForSovendusSectionAndInit() {
   let sovendusShown = false;
+
   const checkInterval = setInterval(() => {
     const sovendusSection = document.getElementById("sovendus");
     if (!sovendusSection) return;
@@ -73,7 +58,6 @@ function waitForSovendusSectionAndInit() {
       clearInterval(checkInterval);
       console.log("Sovendus section visible → calling Sovendus()");
       Sovendus();
-      setupSovendusClick();
     }
   }, 200);
 }
