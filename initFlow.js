@@ -1,3 +1,4 @@
+import { countryConfig } from './countryConfig.js';
 import { reloadImages } from './imageFix.js';
 import { fetchLead, buildPayload } from './formSubmit.js';
 import sponsorCampaigns from './sponsorCampaigns.js';
