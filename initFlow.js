@@ -6,6 +6,9 @@ import sponsorCampaigns from './sponsorCampaigns.js';
 const longFormCampaigns = [];
 window.longFormCampaigns = longFormCampaigns;
 
+const country = window.country || 'NL';
+const config = countryConfig[country];
+
 // ✅ VALIDATE FORM FUNCTIE
 function validateForm(form) {
   let valid = true;
