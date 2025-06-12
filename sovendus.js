@@ -1,52 +1,34 @@
-document.addEventListener('DOMContentLoaded', function() {
-  // Sovendus tracking config
-  var d = new Date();
-  var timestampSovendus = d.getFullYear() +
-    ('0' + (d.getMonth()+1)).slice(-2) +
-    ('0' + d.getDate()).slice(-2) +
-    ('0' + d.getHours()).slice(-2) +
-    ('0' + d.getMinutes()).slice(-2) +
-    ('0' + d.getSeconds()).slice(-2);
+// sovendus.js
+export default function setupSovendus() {
+  const sovendusClickBtn = document.getElementById('sovendus-click');
 
-  window.sovIframes = window.sovIframes || [];
-  window.sovIframes.push({
-    trafficSourceNumber : '5592',
-    trafficMediumNumber : '1',
-    sessionId : localStorage.getItem('t_id'),
-    timestamp : timestampSovendus,
-    orderId : '',
-    orderValue : '',
-    orderCurrency : '',
-    usedCouponCode : '',
-    iframeContainerId : 'sovendus-container-1'
+  if (!sovendusClickBtn) {
+    console.log('Sovendus button niet gevonden → skip setup');
+    return;
+  }
+
+  sovendusClickBtn.addEventListener('click', function() {
+    console.log('Sovendus click → start');
+
+    const t_id = localStorage.getItem('t_id') || '';
+    const consumerSalutation = localStorage.getItem('f_2_title') || '';
+    const consumerFirstName = localStorage.getItem('f_3_firstname') || '';
+    const consumerLastName = localStorage.getItem('f_4_lastname') || '';
+    const consumerEmail = localStorage.getItem('f_1_email') || '';
+
+    const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+
+    const url = `https://tracking.sovendus.com/ts?trafficSourceNumber=5592&trafficMediumNumber=1&sessionId=${t_id}&timestamp=${timestamp}&consumerSalutation=${encodeURIComponent(consumerSalutation)}&consumerFirstName=${encodeURIComponent(consumerFirstName)}&consumerLastName=${encodeURIComponent(consumerLastName)}&consumerEmail=${encodeURIComponent(consumerEmail)}`;
+
+    // Tracking pixel sturen (onzichtbaar img)
+    const img = new Image();
+    img.src = url;
+    console.log('Sovendus tracking URL:', url);
+
+    // Sovendus landingspagina openen → voorbeeld URL → jouw echte URL krijg je van Sovendus
+    const sovendusLandingUrl = 'https://shop.sovendus.com/dein-angebot?sessionId=' + t_id;
+
+    // Open in nieuw tabblad
+    window.open(sovendusLandingUrl, '_blank');
   });
-
-  window.sovConsumer = {
-    consumerSalutation : localStorage.getItem('f_2_title'),
-    consumerFirstName : localStorage.getItem('f_3_firstname'),
-    consumerLastName : localStorage.getItem('f_4_lastname'),
-    consumerEmail : localStorage.getItem('f_1_email')
-  };
-
-  // Sovendus script injecteren
-  var sovDomain = window.location.protocol + "//api.sovendus.com";
-  var sovJsFile = sovDomain + "/sovabo/common/js/flexibleIframe.js";
-  var script = document.createElement('script');
-  script.src = sovJsFile;
-  document.getElementsByTagName('head')[0].appendChild(script);
-
-  // Jouw button click handler
-  document.getElementById('sovendus-click').addEventListener('click', function() {
-    // Sovendus URL openen → zelf in een var zetten
-    var sovOfferUrl = "https://www.sovendus.nl/voordeelpagina"; // <- vul hier jouw Sovendus URL in
-
-    // Open Sovendus in nieuwe tab
-    window.open(sovOfferUrl, "_blank");
-
-    // Trigger flow-next
-    const flowNextBtn = document.querySelector('#sovendus .flow-next');
-    if (flowNextBtn) {
-      flowNextBtn.click();
-    }
-  });
-});
+}
