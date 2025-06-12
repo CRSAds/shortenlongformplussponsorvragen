@@ -1,3 +1,4 @@
+// formSubmit.js
 import { reloadImages } from './imageFix.js';
 import sponsorCampaigns from './sponsorCampaigns.js';
 
@@ -58,7 +59,6 @@ export function buildPayload(campaign, options = { includeSponsors: true }) {
 
   return payload;
 }
-
 window.buildPayload = buildPayload;
 
 export function fetchLead(payload) {
