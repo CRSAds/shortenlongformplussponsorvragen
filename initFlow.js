@@ -100,12 +100,12 @@ export default function initFlow() {
 
         if (form) {
           const gender = form.querySelector('input[name="gender"]:checked')?.value || '';
-          const firstname = form.querySelector('#firstname')?.value.trim() || '';
-          const lastname = form.querySelector('#lastname')?.value.trim() || '';
-          const dob_day = form.querySelector('#dob-day')?.value || '';
-          const dob_month = form.querySelector('#dob-month')?.value || '';
-          const dob_year = form.querySelector('#dob-year')?.value || '';
-          const email = form.querySelector('#email')?.value.trim() || '';
+          const firstname = form.querySelector(`#${config.firstnameField}`)?.value.trim() || '';
+          const lastname = form.querySelector(`#${config.lastnameField}`)?.value.trim() || '';
+          const dob_day = form.querySelector(`#${config.dobDayField}`)?.value || '';
+          const dob_month = form.querySelector(`#${config.dobMonthField}`)?.value || '';
+          const dob_year = form.querySelector(`#${config.dobYearField}`)?.value || '';
+          const email = form.querySelector(`#${config.emailField}`)?.value.trim() || '';
           const urlParams = new URLSearchParams(window.location.search);
           const t_id = urlParams.get('t_id') || crypto.randomUUID();
 
