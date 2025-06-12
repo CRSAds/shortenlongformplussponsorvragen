@@ -33,13 +33,17 @@ export function buildPayload(campaign, options = { includeSponsors: true }) {
   const woonplaats = localStorage.getItem('woonplaats') || localStorage.getItem('city') || localStorage.getItem('towncity') || '';
   const telefoon = localStorage.getItem('telefoon') || localStorage.getItem('phone') || '';
 
+  // Dob als 1 veld voor DataBowl (YYYY-MM-DD)
+  const dob = `${dob_year}-${dob_month.padStart(2, '0')}-${dob_day.padStart(2, '0')}`;
+
   const payload = {
     cid: campaign.cid,
     sid: campaign.sid,
     gender: genderOrTitle,
     firstname: firstname,
     lastname: lastname,
-    dob_day: dob_day,
+    dob: dob,  // Hier wordt nu 1 veld "dob" toegevoegd (wat DataBowl verwacht)
+    dob_day: dob_day,            // ← laat ik ook staan, want je gebruikte deze ook — kan DataBowl evt. mappen
     dob_month: dob_month,
     dob_year: dob_year,
     email: email,
