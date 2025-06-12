@@ -16,7 +16,7 @@ export default function setupSovendus() {
   img.src = trackingUrl;
   console.log('Sovendus tracking URL:', trackingUrl);
 
-  // Dynamisch iframe src invullen → als je wil:
+  // Dynamisch iframe src invullen
   const iframe = document.getElementById('sovendus-iframe');
   if (iframe) {
     const iframeUrl = `https://www.sovendus-connect.com/banner/api/banner?trafficSourceNumber=5592&trafficMediumNumber=1&sessionId=${t_id}&timestamp=${timestamp}&consumerSalutation=${encodeURIComponent(consumerSalutation)}&consumerFirstName=${encodeURIComponent(consumerFirstName)}&consumerLastName=${encodeURIComponent(consumerLastName)}&consumerEmail=${encodeURIComponent(consumerEmail)}&consumerCountry=NL`;
@@ -27,14 +27,5 @@ export default function setupSovendus() {
     console.warn('Sovendus iframe niet gevonden!');
   }
 
-  // Wacht bv 10 seconden → daarna flow-next automatisch klikken
-  setTimeout(() => {
-    console.log('Sovendus timeout → force flow-next click');
-    const flowNextBtn = document.querySelector('#sovendus-container-1 .flow-next');
-    if (flowNextBtn) {
-      flowNextBtn.click();
-    } else {
-      console.log('No flow-next button found in Sovendus section');
-    }
-  }, 10000); // 10 seconden
+  // → Geen automatische flow-next click meer → user bepaalt zelf via Sovendus button.
 }
