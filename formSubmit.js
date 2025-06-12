@@ -19,22 +19,36 @@ export function buildPayload(campaign, options = { includeSponsors: true }) {
   const urlParams = new URLSearchParams(window.location.search);
   const t_id = urlParams.get("t_id") || crypto.randomUUID();
 
+  const genderOrTitle = localStorage.getItem('gender') || localStorage.getItem('title') || '';
+  const firstname = localStorage.getItem('firstname') || localStorage.getItem('f_3_firstname') || '';
+  const lastname = localStorage.getItem('lastname') || localStorage.getItem('f_4_lastname') || '';
+  const dob_day = localStorage.getItem('dob_day') || '';
+  const dob_month = localStorage.getItem('dob_month') || '';
+  const dob_year = localStorage.getItem('dob_year') || '';
+  const email = localStorage.getItem('email') || localStorage.getItem('f_1_email') || '';
+
+  const postcode = localStorage.getItem('postcode') || '';
+  const straat = localStorage.getItem('straat') || localStorage.getItem('address') || '';
+  const huisnummer = localStorage.getItem('huisnummer') || ''; // UK heeft geen apart huisnummer → leeg
+  const woonplaats = localStorage.getItem('woonplaats') || localStorage.getItem('city') || localStorage.getItem('towncity') || '';
+  const telefoon = localStorage.getItem('telefoon') || localStorage.getItem('phone') || '';
+
   const payload = {
     cid: campaign.cid,
     sid: campaign.sid,
-    gender: localStorage.getItem('gender'),
-    firstname: localStorage.getItem('firstname'),
-    lastname: localStorage.getItem('lastname'),
-    dob_day: localStorage.getItem('dob_day'),
-    dob_month: localStorage.getItem('dob_month'),
-    dob_year: localStorage.getItem('dob_year'),
-    email: localStorage.getItem('email'),
+    gender: genderOrTitle,
+    firstname: firstname,
+    lastname: lastname,
+    dob_day: dob_day,
+    dob_month: dob_month,
+    dob_year: dob_year,
+    email: email,
     t_id: t_id,
-    postcode: localStorage.getItem('postcode') || '',
-    straat: localStorage.getItem('straat') || '',
-    huisnummer: localStorage.getItem('huisnummer') || '',
-    woonplaats: localStorage.getItem('woonplaats') || '',
-    telefoon: localStorage.getItem('telefoon') || '',
+    postcode: postcode,
+    straat: straat,
+    huisnummer: huisnummer,
+    woonplaats: woonplaats,
+    telefoon: telefoon,
 
     // campaignId meesturen (optioneel)
     campaignId: Object.keys(sponsorCampaigns).find(key => sponsorCampaigns[key].cid === campaign.cid)
@@ -58,6 +72,7 @@ export function buildPayload(campaign, options = { includeSponsors: true }) {
 
   return payload;
 }
+
 window.buildPayload = buildPayload;
 
 export function fetchLead(payload) {
