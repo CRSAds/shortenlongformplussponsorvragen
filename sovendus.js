@@ -18,17 +18,22 @@ export default function setupSovendus() {
 
     const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
 
-    const url = `https://tracking.sovendus.com/ts?trafficSourceNumber=5592&trafficMediumNumber=1&sessionId=${t_id}&timestamp=${timestamp}&consumerSalutation=${encodeURIComponent(consumerSalutation)}&consumerFirstName=${encodeURIComponent(consumerFirstName)}&consumerLastName=${encodeURIComponent(consumerLastName)}&consumerEmail=${encodeURIComponent(consumerEmail)}`;
+    // Sovendus tracking pixel sturen (optioneel, goed om te houden)
+    const trackingUrl = `https://tracking.sovendus.com/ts?trafficSourceNumber=5592&trafficMediumNumber=1&sessionId=${t_id}&timestamp=${timestamp}&consumerSalutation=${encodeURIComponent(consumerSalutation)}&consumerFirstName=${encodeURIComponent(consumerFirstName)}&consumerLastName=${encodeURIComponent(consumerLastName)}&consumerEmail=${encodeURIComponent(consumerEmail)}`;
 
-    // Tracking pixel sturen (onzichtbaar img)
     const img = new Image();
-    img.src = url;
-    console.log('Sovendus tracking URL:', url);
+    img.src = trackingUrl;
+    console.log('Sovendus tracking URL:', trackingUrl);
 
-    // Sovendus landingspagina openen → voorbeeld URL → jouw echte URL krijg je van Sovendus
-    const sovendusLandingUrl = 'https://shop.sovendus.com/dein-angebot?sessionId=' + t_id;
+    // Sovendus landingspagina → zelfde als iframe URL → DIT is de juiste om in nieuw tabblad te openen:
+    const iframeLandingUrl = `https://www.sovendus-connect.com/banner/api/banner?trafficSourceNumber=5592&trafficMediumNumber=1&sessionId=${t_id}&timestamp=${timestamp}&consumerSalutation=${encodeURIComponent(consumerSalutation)}&consumerFirstName=${encodeURIComponent(consumerFirstName)}&consumerLastName=${encodeURIComponent(consumerLastName)}&consumerEmail=${encodeURIComponent(consumerEmail)}&consumerCountry=NL`;
+
+    console.log('Sovendus iframe LANDING URL:', iframeLandingUrl);
 
     // Open in nieuw tabblad
-    window.open(sovendusLandingUrl, '_blank');
+    window.open(iframeLandingUrl, '_blank');
+
+    // Optioneel: flow-next triggeren na click:
+    // document.querySelector('.flow-next')?.click(); 
   });
 }
