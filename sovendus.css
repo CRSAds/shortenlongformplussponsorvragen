@@ -24,3 +24,16 @@
   margin: 0 auto;
   border: none;
 }
+
+#sovendus-click {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 24px;
+  background-color: #d46b00;
+  color: white;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
