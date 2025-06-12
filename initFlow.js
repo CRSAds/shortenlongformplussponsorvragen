@@ -124,12 +124,18 @@ export default function initFlow() {
         }
 
         step.style.display = 'none';
-        const next = skipNext ? steps[index + 2] : steps[index + 1];
+const next = skipNext ? steps[index + 2] : steps[index + 1];
 
-        if (next) {
-          next.style.display = 'block';
-          reloadImages(next);
-        }
+if (next) {
+  next.style.display = 'block';
+
+  // → extra: als het de Sovendus sectie is, extra logje
+  if (next.id === 'sovendus') {
+    console.log('👉 Sovendus sectie zichtbaar gemaakt!');
+  }
+
+  reloadImages(next);
+}
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
