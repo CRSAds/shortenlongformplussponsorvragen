@@ -77,7 +77,8 @@
   background-color: #e3721c;
 }
 
-#pin-container-mobile {
+#pin-container-mobile,
+#pin-container-desktop {
   display: block !important;
   min-height: 100px;
   padding: 12px 0;
