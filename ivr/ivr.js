@@ -76,61 +76,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const mobileBtn = document.getElementById("show-pin-btn-mobile");
-  const desktopBtn = document.getElementById("show-pin-btn-desktop");
-
-  if (mobileBtn) {
-    mobileBtn.addEventListener("click", async function () {
-      mobileBtn.style.display = "none";
-      document.getElementById("pin-container-mobile").style.display = "block";
-
-      try {
-        const internalVisitId = await visitPromise;
-        const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            clickId: transaction_id,
-            internalVisitId
-          })
-        });
-        const data = await res.json();
-        if (data.pincode) {
-          animatePinRevealSpinner(data.pincode, "pin-code-spinner-mobile");
-        }
-      } catch (err) {
-        console.error("Mobiele PIN-fout:", err);
-      }
-    });
-  }
-
-  if (desktopBtn) {
-    desktopBtn.addEventListener("click", async function () {
-      desktopBtn.style.display = "none";
-      document.getElementById("pin-container-desktop").style.display = "block";
-
-      try {
-        const internalVisitId = await visitPromise;
-        const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            clickId: transaction_id,
-            internalVisitId
-          })
-        });
-        const data = await res.json();
-        if (data.pincode) {
-          animatePinRevealSpinner(data.pincode, "pin-code-spinner-desktop");
-        }
-      } catch (err) {
-        console.error("Desktop PIN-fout:", err);
-      }
-    });
-  }
-
-  // ✅ Auto-click with reliable interval → works 100% in Swipe Pages
-  function waitForIVRSectionAndClick() {
+  // ✅ Auto-show + fetch PIN → works the same on mobile and desktop
+  function waitForIVRSectionAndShowPin() {
     let ivrShown = false;
     const checkInterval = setInterval(() => {
       const ivrSection = document.getElementById("ivr-section");
@@ -142,38 +89,52 @@ document.addEventListener("DOMContentLoaded", function () {
       if (isVisible && !ivrShown) {
         ivrShown = true;
         clearInterval(checkInterval); // stop interval → maar 1x doen!
-        console.log("IVR section visible → simulating...");
+        console.log("IVR section visible → showing PIN...");
 
         if (isMobile) {
-          const mobileBtn = document.getElementById("show-pin-btn-mobile");
-          if (mobileBtn) mobileBtn.click();
-        } else {
-          // Desktop → force direct show & fetch PIN
-          const desktopContainer = document.getElementById("pin-container-desktop");
-          if (desktopContainer) {
-            desktopContainer.style.display = "block";
-            console.log("Desktop → pin-container-desktop zichtbaar → fetching PIN...");
+          const containerId = "pin-container-mobile";
+          const spinnerId = "pin-code-spinner-mobile";
+          document.getElementById(containerId).style.display = "block";
 
-            visitPromise.then(async (internalVisitId) => {
-              const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({
-                  clickId: transaction_id,
-                  internalVisitId
-                })
-              });
-              const data = await res.json();
-              if (data.pincode) {
-                animatePinRevealSpinner(data.pincode, "pin-code-spinner-desktop");
-              }
+          visitPromise.then(async (internalVisitId) => {
+            const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({
+                clickId: transaction_id,
+                internalVisitId
+              })
             });
-          }
+            const data = await res.json();
+            if (data.pincode) {
+              animatePinRevealSpinner(data.pincode, spinnerId);
+            }
+          });
+
+        } else {
+          const containerId = "pin-container-desktop";
+          const spinnerId = "pin-code-spinner-desktop";
+          document.getElementById(containerId).style.display = "block";
+
+          visitPromise.then(async (internalVisitId) => {
+            const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({
+                clickId: transaction_id,
+                internalVisitId
+              })
+            });
+            const data = await res.json();
+            if (data.pincode) {
+              animatePinRevealSpinner(data.pincode, spinnerId);
+            }
+          });
         }
       }
     }, 200); // check elke 200ms
   }
 
-  // Start auto-click logic:
-  waitForIVRSectionAndClick();
+  // Start auto-show logic:
+  waitForIVRSectionAndShowPin();
 });
