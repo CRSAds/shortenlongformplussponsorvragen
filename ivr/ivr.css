@@ -76,3 +76,14 @@
 .call-now-button:hover {
   background-color: #e3721c;
 }
+
+#pin-container-mobile {
+  display: block !important;
+  min-height: 100px;
+  padding: 12px 0;
+}
+
+.pin-spinner {
+  opacity: 1;
+  visibility: visible;
+}
