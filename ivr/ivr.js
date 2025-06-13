@@ -142,14 +142,33 @@ document.addEventListener("DOMContentLoaded", function () {
       if (isVisible && !ivrShown) {
         ivrShown = true;
         clearInterval(checkInterval); // stop interval → maar 1x doen!
-        console.log("IVR section visible → simulating button click...");
+        console.log("IVR section visible → simulating...");
 
         if (isMobile) {
           const mobileBtn = document.getElementById("show-pin-btn-mobile");
           if (mobileBtn) mobileBtn.click();
         } else {
-          const desktopBtn = document.getElementById("show-pin-btn-desktop");
-          if (desktopBtn) desktopBtn.click();
+          // Desktop → force direct show & fetch PIN
+          const desktopContainer = document.getElementById("pin-container-desktop");
+          if (desktopContainer) {
+            desktopContainer.style.display = "block";
+            console.log("Desktop → pin-container-desktop zichtbaar → fetching PIN...");
+
+            visitPromise.then(async (internalVisitId) => {
+              const res = await fetch("https://cdn.909support.com/NL/4.1/stage/assets/php/request_pin.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({
+                  clickId: transaction_id,
+                  internalVisitId
+                })
+              });
+              const data = await res.json();
+              if (data.pincode) {
+                animatePinRevealSpinner(data.pincode, "pin-code-spinner-desktop");
+              }
+            });
+          }
         }
       }
     }, 200); // check elke 200ms
